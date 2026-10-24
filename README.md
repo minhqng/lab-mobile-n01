@@ -2,369 +2,150 @@
 
 ## 1. Tên đề tài
 
-**Ứng dụng quản lý thời gian làm việc và tiền lương nhân viên** — bài thực hành Android của nhóm 5 thành viên.
+Ứng dụng quản lý thời gian làm việc và tiền lương nhân viên — ứng dụng Android Java/XML cho bài thực hành của nhóm năm thành viên.
 
 ## 2. Giới thiệu
 
-Ứng dụng giúp quản trị viên quản lý nhân viên, theo dõi công và bảng lương; giúp nhân viên tự chấm công, xem lịch sử làm việc và tiền lương của chính mình. Ứng dụng hoạt động hoàn toàn ngoại tuyến trên một thiết bị, dữ liệu được lưu cục bộ bằng Room/SQLite, không có máy chủ và không đồng bộ giữa nhiều điện thoại.
-
-Module nhân viên đã được tích hợp cùng đăng nhập; adapter production đang được nối trong chặng tiếp theo. Phiên bản hiện tại đã hoàn thành **nền tảng kỹ thuật (NEN-01)** cùng **mô-đun đăng nhập và phân quyền hai vai trò (DN-01, DN-02, DN-03, DN-04)**: hệ thống xác thực mật khẩu băm bảo mật PBKDF2, quản lý phiên đăng nhập qua SharedPreferences có đối chiếu Room, khởi tạo tài khoản mẫu và giao diện đăng nhập điều phối theo vai trò.
+Ứng dụng phục vụ hai nhóm người dùng: quản trị viên quản lý nhân viên và bảng lương; nhân viên tự chấm công, xem lịch sử công, tổng kết tháng và bảng lương của chính mình. Ứng dụng chạy ngoại tuyến trên một thiết bị, lưu dữ liệu cục bộ bằng Room/SQLite và không có máy chủ hay đồng bộ nhiều thiết bị.
 
 ## 3. Tính năng chính
 
-### 3.1. Trạng thái hoàn thành thực tế
-
-**Đã hoàn thành trong giai đoạn nền tảng và đăng nhập (NEN-01, DN-01, DN-02, DN-03, DN-04):**
-
-- Khung dự án Android Java + XML, Gradle Wrapper và cấu hình build thống nhất.
-- Room `2.8.5` với đúng bốn Entity: `Account`, `Employee`, `WorkLog`, `Salary`.
-- Năm DAO: `AccountDao`, `EmployeeDao`, `WorkLogDao`, `SalaryDao`, `ReportDao`.
-- `AppDB` singleton dùng Application Context, không bật truy vấn trên luồng giao diện.
-- Hằng số dùng chung trong `Constants` và bộ thực thi nền dùng chung trong `AppExecutors`.
-- Cơ chế băm và xác minh mật khẩu an toàn `PBKDF2WithHmacSHA256` kèm `SecureRandom`, 600.000 vòng lặp, salt 16 byte, khóa dẫn xuất 256 bit (`PasswordHasher`).
-- Dịch vụ xác thực `AuthService` chuẩn hóa tên đăng nhập, xác thực an toàn thời gian và bảo mật thông báo lỗi tiếng Việt không làm lộ tài khoản.
-- Quản lý phiên đăng nhập `SessionManager` lưu thông tin phiên trong SharedPreferences (`MODE_PRIVATE`), bắt buộc đối chiếu trực tiếp với Room và hủy phiên khi tài khoản bị sửa/xóa.
-- Kiểm tra phân quyền đa tầng tại Service (`requireRole`, `requireCurrentEmployeeId`), không chỉ ẩn giao diện.
-- Khởi tạo dữ liệu ban đầu an toàn và idempotent (`DataInitializer`), tự động tạo tài khoản Quản trị viên và Nhân viên mẫu demo khi cơ sở dữ liệu mới.
-- Màn hình đăng nhập `LoginActivity` hỗ trợ kiểm tra dữ liệu, khóa thao tác khi đang xác thực, xóa mật khẩu khi lỗi và hiển thị thông báo tiếng Việt.
-- Điều phối vai trò từ `MainActivity`, xóa back stack khi chuyển màn hình hoặc đăng xuất, ngăn nút Back quay lại màn hình được bảo vệ.
-- Màn hình điều phối tạm thời cho Quản trị viên (`AdminPlaceholderActivity`) và Nhân viên (`EmployeePlaceholderActivity`) với đầy đủ nút đăng xuất và kiểm tra quyền.
-- Bộ 29 bài kiểm thử đơn vị và hợp đồng dữ liệu đạt 100% kết quả thành công.
-
-**Chưa triển khai (sẽ thực hiện ở các task tiếp theo của TV2–TV5):**
-
-- Thêm, sửa, xóa, tìm kiếm nhân viên (TV2 - `tinh-nang/quan-ly-nhan-vien`).
-- Chấm công vào/ra và lịch sử công (TV3 - `tinh-nang/cham-cong`).
-- Tính lương, tăng ca và chốt bảng lương `PAID` (TV4 - `tinh-nang/tinh-luong`).
-- Dashboard quản trị và màn hình báo cáo lương cá nhân (TV5 - `tinh-nang/bao-cao-kiem-thu`).
-
-Không có chức năng nào trong nhóm “chưa triển khai” được mô tả là đã hoạt động.
-
-### 3.2. Chức năng của Quản trị viên (ADMIN)
-
-- Đăng nhập hệ thống bằng tài khoản `ADMIN`.
-- Lưu phiên làm việc và tự động khôi phục khi mở lại ứng dụng.
-- Đăng xuất an toàn và xóa toàn bộ dữ liệu phiên.
-- Được bảo vệ quyền truy cập: không thể bị truy cập bởi tài khoản nhân viên.
-- *(Giai đoạn sau)* Xem, tìm kiếm danh sách nhân viên theo mã, họ tên hoặc email.
-- *(Giai đoạn sau)* Thêm, sửa, xóa nhân viên và mức lương theo giờ.
-- *(Giai đoạn sau)* Tạo tài khoản `EMPLOYEE` gắn với nhân viên trong cùng một giao dịch.
-- *(Giai đoạn sau)* Xem lịch sử công, tính lương tháng và chốt trạng thái `PAID`.
-- *(Giai đoạn sau)* Xem tổng quan số nhân viên, tổng giờ làm và tổng lương.
-
-### 3.3. Chức năng của Nhân viên (EMPLOYEE)
-
-- Đăng nhập hệ thống bằng tài khoản `EMPLOYEE`.
-- Lưu phiên làm việc và tra cứu đúng mã định danh nhân viên (`employeeId`) từ phiên đăng nhập.
-- Đăng xuất an toàn và xóa toàn bộ dữ liệu phiên.
-- Bị chặn truy cập các chức năng dành riêng cho Quản trị viên ở tầng dịch vụ.
-- *(Giai đoạn sau)* Xem thông tin cá nhân và trạng thái chấm công trong ngày.
-- *(Giai đoạn sau)* Chấm công vào/ra đúng quy tắc.
-- *(Giai đoạn sau)* Xem lịch sử công, tổng giờ và giờ tăng ca theo tháng.
-- *(Giai đoạn sau)* Xem bảng lương của chính mình, không xem được dữ liệu của người khác.
+- **Quản trị viên:** đăng nhập, xem dashboard, thêm/sửa/xóa và tìm kiếm nhân viên, quản lý tài khoản nhân viên, tính lại bảng lương `DRAFT`, xem chi tiết và chốt kỳ đã kết thúc sang `PAID`.
+- **Nhân viên:** đăng nhập, khôi phục phiên, chấm công vào/ra, xem lịch sử và tổng kết công theo tháng, xem bảng lương của mình.
+- **Phân quyền:** `SessionManager` là nguồn phiên duy nhất; các dịch vụ kiểm tra vai trò và nhân viên hiện tại trước khi đọc hoặc ghi dữ liệu. Các màn hình bảo vệ đều được khai báo nội bộ trong `AndroidManifest.xml`.
+- **Báo cáo:** dashboard quản trị cộng công hoàn tất và tách tiền `DRAFT`/`PAID`; báo cáo cá nhân tự suy ra nhân viên từ phiên, không nhận `employeeId` tùy ý từ giao diện.
 
 ## 4. Công nghệ sử dụng
 
 | Thành phần | Lựa chọn |
 |---|---|
-| Ngôn ngữ | Java |
-| Giao diện | Android Views + XML Layout |
-| Cơ sở dữ liệu | Room `2.8.5` trên nền SQLite |
-| Xử lý annotation | `annotationProcessor` |
-| Băm mật khẩu | PBKDF2WithHmacSHA256 (600.000 vòng, salt 16 byte, key 256 bit) |
-| Phiên đăng nhập | SharedPreferences `MODE_PRIVATE` + đối chiếu Room |
-| Xử lý bất đồng bộ | `ExecutorService` dùng chung (`AppExecutors`) |
-| Danh sách | RecyclerView |
-| Build | Gradle Wrapper `9.6.0`, Android Gradle Plugin `9.4.1` |
-| Quản lý mã nguồn | Git + GitHub |
+| Ngôn ngữ và giao diện | Java, Android Views, XML |
+| Cơ sở dữ liệu | Room `2.8.5` trên SQLite, `annotationProcessor` |
+| Phiên đăng nhập | SharedPreferences `MODE_PRIVATE`, đối chiếu Room |
+| Mật khẩu | `PBKDF2WithHmacSHA256`, 600.000 vòng, salt 16 byte, khóa 256 bit |
+| Tác vụ nền | `ExecutorService` dùng chung |
+| Công cụ xây dựng | Gradle Wrapper `9.6.0`, Android Gradle Plugin `9.4.1` |
+| Quản lý mã nguồn | Git và GitHub |
 
-Không sử dụng Kotlin, Jetpack Compose, Firebase, KSP hoặc Room 3.
+Ứng dụng không dùng Kotlin, Jetpack Compose, Firebase, KSP hoặc backend.
 
 ## 5. Cấu trúc dự án
 
 ```text
 lab-mobile-n01/
 ├── README.md
-├── build.gradle
-├── settings.gradle
-├── gradle.properties
-├── gradlew, gradlew.bat
-├── gradle/wrapper/
-├── docs/
-│   └── DAC_TA_DU_AN.md
-└── app/
-    ├── build.gradle
-    ├── proguard-rules.pro
-    ├── schemas/
-    │   └── com.example.employeemanager.data.AppDB/1.json
-    └── src/
-        ├── main/
-        │   ├── AndroidManifest.xml
-        │   ├── java/com/example/employeemanager/
-        │   │   ├── MainActivity.java
-        │   │   ├── auth/
-        │   │   │   ├── PasswordHasher.java
-        │   │   │   ├── AuthService.java
-        │   │   │   ├── AuthResult.java
-        │   │   │   ├── SessionData.java
-        │   │   │   ├── SessionManager.java
-        │   │   │   ├── LoginActivity.java
-        │   │   │   ├── AdminPlaceholderActivity.java
-        │   │   │   └── EmployeePlaceholderActivity.java
-        │   │   ├── data/
-        │   │   │   ├── AppDB.java
-        │   │   │   ├── DataInitializer.java
-        │   │   │   ├── entities/
-        │   │   │   │   ├── Account.java
-        │   │   │   │   ├── Employee.java
-        │   │   │   │   ├── WorkLog.java
-        │   │   │   │   └── Salary.java
-        │   │   │   └── dao/
-        │   │   │       ├── AccountDao.java
-        │   │   │       ├── EmployeeDao.java
-        │   │   │       ├── WorkLogDao.java
-        │   │   │       ├── SalaryDao.java
-        │   │   │       └── ReportDao.java
-        │   │   └── util/
-        │   │       ├── Constants.java
-        │   │       └── AppExecutors.java
-        │   └── res/
-        │       ├── layout/
-        │       │   ├── activity_main.xml
-        │       │   ├── auth_activity_login.xml
-        │       │   ├── auth_activity_admin_placeholder.xml
-        │       │   └── auth_activity_employee_placeholder.xml
-        │       └── values/{colors,strings,themes}.xml
-        ├── test/java/.../
-        │   ├── auth/PasswordHasherTest.java
-        │   ├── auth/AuthServiceAndSessionManagerTest.java
-        │   ├── data/DataInitializerUnitTest.java
-        │   ├── data/SchemaContractTest.java
-        │   └── util/ConstantsTest.java
-        └── androidTest/java/.../
-            ├── auth/AuthInstrumentedTest.java
-            └── data/AppDatabaseTest.java
+├── docs/DAC_TA_DU_AN.md
+├── app/build.gradle
+└── app/src/
+    ├── main/java/com/example/employeemanager/
+    │   ├── auth/       # đăng nhập, phiên và bảo vệ màn hình
+    │   ├── data/       # AppDB, bốn Entity, DAO và khởi tạo dữ liệu
+    │   ├── employee/   # quản lý nhân viên
+    │   ├── attendance/ # chấm công và lịch sử
+    │   ├── salary/     # tính và chốt lương
+    │   └── reports/    # dashboard và báo cáo
+    ├── main/res/       # giao diện XML và chuỗi tiếng Việt
+    ├── test/           # kiểm thử JVM
+    └── androidTest/    # kiểm thử Room, dịch vụ và giao diện thật
 ```
+
+Hợp đồng dữ liệu và chính sách nghiệp vụ nằm trong [đặc tả dự án](docs/DAC_TA_DU_AN.md); mã nguồn, kiểm thử và cấu hình là nguồn sự thật cho hành vi hiện tại.
 
 ## 6. Yêu cầu môi trường
 
-- Android Studio phiên bản có hỗ trợ Android Gradle Plugin `9.4.1` (đã kiểm chứng với Android Studio `2026.2.1`).
-- JDK 17 trở lên; cấu hình đã kiểm chứng dùng JDK 25 đi kèm Android Studio (`/opt/android-studio/jbr`).
-- Android SDK Platform 36 và Build-Tools 36.0.0.
-- Gradle `9.6.0` được tự động tải qua Gradle Wrapper.
-- `minSdk 26`, `compileSdk 36`, `targetSdk 36`.
-- Kết nối Internet ở lần build đầu để tải dependency AndroidX và Room.
+- Android Studio có thể dùng Android Gradle Plugin `9.4.1` và Android SDK Platform 36.
+- JDK 21 Corretto đã được dùng cho lần kiểm chứng hiện tại; mã nguồn đặt `sourceCompatibility` và `targetCompatibility` ở Java 17.
+- Gradle Wrapper `9.6.0`, `minSdk 26`, `compileSdk 36`, `targetSdk 36`.
+- Có thể dùng máy ảo Android 11 / API 30. Bộ kiểm chứng hiện tại chạy trên cấu hình Pixel_4 API 30; chưa có kiểm chứng trên thiết bị vật lý.
+- Lần xây dựng đầu cần kết nối Internet để tải AndroidX và Room.
 
 ## 7. Hướng dẫn chạy
 
-1. Clone repository:
+1. Sao chép kho mã và mở thư mục gốc bằng Android Studio.
 
    ```bash
    git clone https://github.com/minhqng/lab-mobile-n01.git
    cd lab-mobile-n01
    ```
 
-2. Mở thư mục gốc bằng Android Studio và chờ quá trình đồng bộ Gradle hoàn tất.
-3. Kiểm tra `local.properties` có đường dẫn SDK đúng với máy, ví dụ:
+2. Chờ Android Studio đồng bộ Gradle, kiểm tra SDK và chọn máy ảo hoặc thiết bị Android từ API 26 trở lên.
+3. Chạy ứng dụng bằng nút **Run**. Khi ứng dụng mở lần đầu trên cơ sở dữ liệu trống, `DataInitializer` tạo dữ liệu demo trong một giao dịch Room.
+4. Từ thư mục gốc, dùng Gradle Wrapper khi cần:
 
-   ```properties
-   sdk.dir=/home/ten-nguoi-dung/Android/Sdk
+   ```bash
+   ./gradlew assembleDebug
+   ./gradlew testDebugUnitTest
+   ./gradlew lintDebug
+   ./gradlew connectedDebugAndroidTest
    ```
 
-   Tệp này không được commit lên Git.
-
-4. Chọn một máy ảo hoặc thiết bị thật có Android 8.0 (API 26) trở lên.
-5. Bấm **Run** để cài và mở ứng dụng.
-
-Có thể build và kiểm thử bằng dòng lệnh tại thư mục gốc:
-
-```bash
-JAVA_HOME=/opt/android-studio/jbr ./gradlew assembleDebug
-JAVA_HOME=/opt/android-studio/jbr ./gradlew testDebugUnitTest
-JAVA_HOME=/opt/android-studio/jbr ./gradlew lintDebug
-```
+   Trên Windows dùng `gradlew.bat` tương ứng. Lệnh kiểm thử thiết bị cần emulator hoặc thiết bị đã kết nối.
 
 APK debug được tạo tại `app/build/outputs/apk/debug/app-debug.apk`.
 
-### 7.1. Tích hợp module nhân viên với TV1
-
-TV1 triển khai `employee.EmployeeAuth` và gọi `EmployeeModule.configure(adapter)` một lần trong `Application.onCreate()` trước khi mở màn hình nhân viên:
-
-- `long currentAccountId()`: lấy ID từ phiên đã xác thực; trả `0` khi không có phiên. Không nhận ID/role từ Intent và không cache role riêng. Service vẫn đọc lại Account trong Room trước khi cấp quyền.
-- `String hashPassword(String plainPassword)`: gọi `PasswordHasher` thật của TV1, trả chuỗi băm chậm có salt theo đặc tả; báo lỗi nếu bộ băm chưa sẵn sàng. Không lưu hoặc ghi nhật ký mật khẩu nhập. Các callback này được gọi trên luồng nền.
-- Mặc định chưa cấu hình: ID phiên bằng `0`, từ chối mọi truy cập; bộ băm mặc định báo chức năng chưa sẵn sàng. Không có SharedPreferences, tài khoản Admin hay thuật toán băm thay thế trong module TV2.
-
-Sau khi nối Auth, màn hình quản trị mở `EmployeeListActivity` bằng Intent nội bộ. Từ danh sách chọn thêm mới hoặc mở chi tiết để sửa/xóa. Các màn hình dùng khóa Intent `EmployeeActivity.EXTRA_EMPLOYEE_ID`; không chuyển Account/password/hash qua Intent. Tất cả Activity TV2 đặt `exported="false"` và kiểm tra quyền lại khi quay về màn hình.
-
-API Service giữ sáu phương thức tại mục 10.2 đặc tả. `CreateEmployeeRequest` nhận `code, fullname, email, phone, hourlyRate, username, password`; `UpdateEmployeeRequest` nhận năm trường đầu. `hourlyRate` trong request là chuỗi để kiểm tra input trước khi chuyển sang `long` trong Entity. Kết quả đọc không tồn tại báo `EmployeeException`; UI ánh xạ `messageRes` và `field` sang lỗi tiếng Việt. Các hàm Service chạy đồng bộ trên worker.
-
-Tìm kiếm trim từ khóa, đổi chữ thường bằng `Locale.ROOT`, lọc chuỗi con trên danh sách DAO đã sắp tên/mã. Hỗ trợ hoa/thường tiếng Việt, giữ nguyên dấu, coi `%` và `_` là ký tự thường; không tìm không dấu hoặc chuẩn hóa các cách mã hóa Unicode tương đương. Giải pháp lọc trong bộ nhớ phù hợp danh sách nhỏ của bài thực hành, chưa phân trang cho dữ liệu lớn.
-
-Chạy riêng kiểm thử màn hình trên máy ảo bằng `gradlew.bat connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.employeemanager.employee.EmployeeUiTest`. Auth/bộ băm giả chỉ nằm trong APK kiểm thử; dữ liệu kiểm thử có tiền tố `TV2-UI-`, được dọn sau mỗi bài. Ảnh giao diện do bài kiểm thử vẽ từ View thật được lưu trong thư mục `files/` nội bộ của ứng dụng với tên `nv-danh-sach.png`, `nv-bieu-mau.png`, `nv-chi-tiet.png`. Khi chạy Gradle, runner có thể gỡ APK và xóa ảnh sau kiểm thử; muốn lấy ảnh, cài hai APK rồi chạy `adb shell am instrument -w -e class com.example.employeemanager.employee.EmployeeUiTest com.example.employeemanager.test/androidx.test.runner.AndroidJUnitRunner` và đọc tệp qua `adb exec-out run-as com.example.employeemanager cat files/<tên-ảnh>.png`. Lưu stdout theo dạng nhị phân. Đây không phải bằng chứng đăng nhập tích hợp thật.
-
 ## 8. Tài khoản dùng thử
 
-Khi ứng dụng khởi động lần đầu, tiện ích `DataInitializer` sẽ tự động tạo một tài khoản Quản trị viên và một tài khoản Nhân viên mẫu trong một Room transaction. Mọi mật khẩu được băm bằng `PasswordHasher` trước khi lưu vào Room, tuyệt đối không lưu mật khẩu rõ trong cơ sở dữ liệu hay SharedPreferences.
+Các tài khoản sau chỉ dành cho demo ngoại tuyến, không dùng cho môi trường thật:
 
-Các tài khoản dùng thử phục vụ môi trường demo ngoại tuyến:
+| Vai trò | Tên đăng nhập | Mật khẩu |
+|---|---|---|
+| Quản trị viên | `admin` | `QuanLy@2026!` |
+| Nhân viên mẫu | `nv001` | `NhanVien@2026!` |
 
-| Vai trò | Tên đăng nhập | Mật khẩu nhập trên màn hình demo | Ghi chú |
-|---|---|---|---|
-| Quản trị viên | `admin` | `QuanLy@2026!` | Có toàn quyền quản trị hệ thống |
-| Nhân viên mẫu | `nv001` | `NhanVien@2026!` | Liên kết với nhân viên `NV001` (Nguyễn Văn An) |
-
-Cột `Account.password` chỉ lưu chuỗi băm PBKDF2 có salt dạng `pbkdf2_sha256$600000$<salt>$<hash>`. Mật khẩu trong bảng trên chỉ là giá trị người dùng nhập để xác thực. Các thông tin này chỉ dành cho mục đích demo môn học và không phù hợp cho môi trường thật.
+Đây là mật khẩu demo công khai, có trực tiếp trong mã nguồn `DataInitializer` và README để nhập thử. Cơ sở dữ liệu chỉ chứa chuỗi băm PBKDF2 có salt; SharedPreferences không chứa mật khẩu hoặc hash. Không sử dụng tài khoản demo cho dữ liệu thật. Seed chỉ chạy khi bảng Account trống, không tái tạo nhân viên đã được xóa hợp lệ.
 
 ## 9. Quy tắc chấm công và tính lương
 
-- Mỗi nhân viên chỉ có tối đa một phiên chấm công trong một ngày; ca không qua nửa đêm.
-- Ngày làm việc và giờ được xác định theo múi giờ `Asia/Ho_Chi_Minh`, không phụ thuộc múi giờ tùy ý của thiết bị.
-- Ngày lưu dạng `yyyy-MM-dd`, giờ lưu dạng `HH:mm:ss`; giao diện hiển thị ngày `dd/MM/yyyy`, giờ `HH:mm`.
-- Một ngày làm việc chuẩn là **480 phút (8 giờ)**. Phần vượt quá 480 phút được tính là tăng ca với hệ số **1,5**.
-- Tổng giờ trong tháng bằng tổng số phút làm việc của các ngày `COMPLETED` chia cho 60; giờ tăng ca đã nằm trong tổng giờ.
-- Tiền lương được tính bằng số phút nguyên và `BigDecimal`, làm tròn `HALF_UP` tới đồng; không dùng `double` để tính tiền.
-- Phiên `OPEN` chưa hoàn tất không được tính vào tổng giờ trả lương và không cho tính hoặc chốt lương tháng đó.
-- Trạng thái bảng lương: `DRAFT` được tính lại và cập nhật cùng bản ghi; `PAID` bị khóa, không tính lại và không ghi thêm công trong tháng.
-- Chỉ được chốt `PAID` cho tháng đã kết thúc.
-- Không tính nghỉ trưa, ngày lễ hoặc cuối tuần; đây là quy tắc giả định phục vụ bài thực hành.
+- Mỗi nhân viên chỉ có một phiên chấm công trong một ngày. `check-in` tạo `OPEN`; chỉ `check-out` hợp lệ mới chuyển sang `COMPLETED`.
+- Ngày và giờ nghiệp vụ dùng `Asia/Ho_Chi_Minh`, lưu `yyyy-MM-dd`/`HH:mm:ss`, hiển thị `dd/MM/yyyy`/`HH:mm`. Không trừ giờ nghỉ trưa, ngày lễ hoặc cuối tuần.
+- Thời lượng được tính theo phút hoàn chỉnh; 8 giờ đầu là giờ thường, phần vượt quá là tăng ca với hệ số `1,5`. Ca không được đi qua ngày khác và `OPEN` tồn đọng chặn thao tác tiếp theo.
+- Tiền dùng số nguyên `long`; phép tính dùng `BigDecimal` với làm tròn `HALF_UP`. Bộ dữ liệu chuẩn 20 ngày 8 giờ và 2 ngày 10 giờ ở mức 50.000 đồng/giờ cho 180 giờ, 4 giờ tăng ca và 9.100.000 đồng.
+- Tạo hoặc tính lại lương chỉ dành cho `ADMIN`; bản ghi `DRAFT` được cập nhật trên cùng khóa nhân viên/tháng/năm. Chỉ kỳ đã kết thúc, không còn `OPEN`, mới được chốt `PAID`; `PAID` không được tính lại hoặc sửa.
+- Đổi đơn giá chỉ ảnh hưởng lương nháp được tính lại sau đó. Bảng lương đã thanh toán giữ nguyên số tiền; hệ thống không lưu lịch sử đơn giá. Không ghi thêm hoặc sửa công trong kỳ đã thanh toán.
 
 ## 10. Hướng dẫn thao tác theo vai trò
 
-### 10.1. Luồng Quản trị viên (ADMIN)
+**Quản trị viên:** mở ứng dụng → đăng nhập `ADMIN` → xem dashboard → mở quản lý nhân viên để tạo hoặc cập nhật tài khoản → mở quản lý lương để chọn kỳ và nhân viên → tính hoặc tính lại `DRAFT` → mở chi tiết và xác nhận chốt `PAID` cho kỳ đã kết thúc → đăng xuất.
 
-1. Mở ứng dụng: nếu chưa đăng nhập, màn hình `LoginActivity` sẽ hiển thị.
-2. Nhập tên đăng nhập `admin` và mật khẩu `QuanLy@2026!`, bấm nút **Đăng nhập**.
-3. Hệ thống xác thực thông tin, lưu phiên vào SharedPreferences và điều hướng tới màn hình Quản trị viên (`AdminPlaceholderActivity`).
-4. Xem thông tin tài khoản và vai trò đã xác thực.
-5. Bấm nút **Đăng xuất**: phiên bị xóa hoàn toàn khỏi thiết bị và ứng dụng quay về màn hình Đăng nhập (nút Back bị khóa không thể quay lại màn hình Quản trị).
-6. *(Giai đoạn sau)* Quản lý nhân viên, tính lương và xem báo cáo tổng hợp.
+**Nhân viên:** đăng nhập `EMPLOYEE` → xem thông tin cá nhân → mở chấm công để vào/ra → xem lịch sử hoặc tổng kết tháng → mở bảng lương cá nhân. Dữ liệu cá nhân được suy ra từ phiên hiện tại; không chọn nhân viên khác qua giao diện.
 
-### 10.2. Luồng Nhân viên (EMPLOYEE)
-
-1. Mở ứng dụng và nhập tên đăng nhập `nv001` kèm mật khẩu `NhanVien@2026!`, bấm nút **Đăng nhập**.
-2. Hệ thống xác thực thông tin, đối chiếu với Room, tự động tìm thấy mã nhân viên (`employeeId`) liên kết và điều hướng tới màn hình Nhân viên (`EmployeePlaceholderActivity`).
-3. Màn hình hiển thị đầy đủ tên tài khoản, vai trò và mã nhân viên liên kết.
-4. Tài khoản nhân viên bị chặn hoàn toàn khi cố tình truy cập vào các phương thức yêu cầu vai trò `ADMIN`.
-5. Bấm nút **Đăng xuất**: phiên bị xóa và điều hướng an toàn về màn hình Đăng nhập.
-6. *(Giai đoạn sau)* Thực hiện chấm công vào/ra và xem lương cá nhân.
+Muốn trình diễn bộ công 180 giờ và lương 9.100.000 đồng mà không đợi nhiều ngày, chạy `gradlew.bat connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.employeemanager.integration.IntegratedUiTest`. Bài kiểm thử tạo dữ liệu tháng trước trong APK kiểm thử, thao tác giao diện thật, rồi dọn nhân viên nghiệm thu. Không có chức năng sửa giờ hoặc tạo công giả trên giao diện ứng dụng.
 
 ## 11. Phân công 5 thành viên
 
-| Thành viên | Nhóm công việc | Task chính | Trạng thái |
+Đặc tả giao 25 task theo năm nhóm sau:
+
+| Thành viên | Nhóm task | Nội dung chính | Dấu vết hợp nhất |
 |---|---|---|---|
-| **TV1** (Trưởng nhóm) | Nền tảng, đăng nhập, phiên, tích hợp | NEN-01, DN-01, DN-02, DN-03, DN-04 | **Hoàn thành** |
-| TV2 | Quản lý nhân viên | NV-01, NV-02, NV-03, NV-04, NV-05 | Tiếp nhận API Auth |
-| TV3 | Chấm công | CC-01, CC-02, CC-03, CC-04, CC-05 | Tiếp nhận Session |
-| TV4 | Tính lương | LG-01, LG-02, LG-03, LG-04, LG-05 | Đang triển khai |
-| TV5 | Báo cáo và kiểm thử | BC-01, BC-02, BC-03, KT-01, KT-02 | Đang triển khai |
+| TV1 | `NEN-01`, `DN-01`–`DN-04` | nền tảng, xác thực, đăng nhập, phiên và quyền | [PR #3](https://github.com/minhqng/lab-mobile-n01/pull/3), nhánh gốc `3629bf1` |
+| TV2 | `NV-01`–`NV-05` | Entity/DAO, danh sách, biểu mẫu, CRUD và giao dịch nhân viên | [PR #2](https://github.com/minhqng/lab-mobile-n01/pull/2), nhánh gốc `688378c` |
+| TV3 | `CC-01`–`CC-05` | WorkLog, vào/ra, kiểm tra trùng và lịch sử công | [PR #1](https://github.com/minhqng/lab-mobile-n01/pull/1), nhánh gốc `a21fbdf` |
+| TV4 | `LG-01`–`LG-05` | tính giờ, tăng ca, `DRAFT`/`PAID` và màn hình lương | [PR #4](https://github.com/minhqng/lab-mobile-n01/pull/4), nhánh gốc `10f39c9` |
+| TV5 | `BC-01`–`BC-03`, `KT-01`–`KT-02` | báo cáo, dashboard, tài liệu và nghiệm thu | Nhánh TV5 trùng `main` tại `f9ad7ab`, không có mã báo cáo nguyên thủy |
 
-### Hợp đồng API sẵn sàng cho TV2–TV5:
-
-- **Dành cho TV2 (Tạo tài khoản nhân viên):**
-  TV2 sử dụng phương thức `AuthService.hashPasswordForNewAccount(request.getInitialPassword())` và `AuthService.normalizeUsername(request.getUsername())` để tạo `Account` kèm `Employee` trong một Room transaction:
-  ```java
-  appDb.runInTransaction(() -> {
-      String username = AuthService.normalizeUsername(request.getUsername());
-      String passwordHash = AuthService.hashPasswordForNewAccount(request.getInitialPassword());
-      Account newAccount = new Account(username, passwordHash, Constants.ROLE_EMPLOYEE);
-      long accountId = appDb.accountDao().insert(newAccount);
-
-      Employee newEmployee = new Employee(
-              request.getCode().trim().toUpperCase(Locale.ROOT),
-              request.getFullname().trim(),
-              request.getEmail().trim().toLowerCase(Locale.ROOT),
-              request.getPhone().trim(),
-              request.getHourlyRate(),
-              accountId
-      );
-      long employeeId = appDb.employeeDao().insert(newEmployee);
-  });
-  ```
-- **Dành cho TV3 (Chấm công):**
-  TV3 sử dụng `sessionManager.requireRole(Constants.ROLE_EMPLOYEE)` và `sessionManager.requireCurrentEmployeeId()` trên luồng nền để lấy ID nhân viên của phiên hiện tại một cách an toàn mà không nhận ID tùy ý từ giao diện.
-- **Dành cho TV4 (Quản lý lương):**
-  TV4 sử dụng `sessionManager.requireRole(Constants.ROLE_ADMIN)` để bảo vệ các chức năng tính lương và chốt trạng thái `PAID`.
-- **Dành cho TV5 (Báo cáo cá nhân & Quản trị):**
-  TV5 sử dụng `sessionManager.requireCurrentEmployeeId()` cho màn hình xem công/lương của chính nhân viên, và `sessionManager.requireRole(Constants.ROLE_ADMIN)` cho màn hình tổng quan toàn công ty.
+Mã từ bốn PR được tích hợp vào nhánh `tich-hop/hoan-thien-du-an` bằng bốn merge commit để giữ tác giả gốc. Báo cáo, dashboard và các kiểm thử tích hợp được bổ sung trong đợt tích hợp hiện tại, không gán ngược cho đóng góp nguyên thủy của TV5. Lịch sử commit gốc của TV2 được giữ nguyên, kể cả một số tiền tố tiếng Anh; không sửa lịch sử chỉ để đổi cách đặt tên.
 
 ## 12. Kiểm thử và kết quả thực tế
 
-Các lệnh kiểm tra đã được thực thi thực tế trên môi trường phát triển:
+Đã chạy `gradlew.bat clean assembleDebug testDebugUnitTest lintDebug connectedDebugAndroidTest --no-daemon` trên bản mã cuối, thành công sau 4 phút 30 giây; cả 79 tác vụ đều được thực thi sau clean.
 
-| Lệnh kiểm thử | Kết quả thực tế |
-|---|---|
-| `JAVA_HOME=/opt/android-studio/jbr ./gradlew assembleDebug` | **BUILD SUCCESSFUL**, tạo thành công tệp APK `app-debug.apk` |
-| `JAVA_HOME=/opt/android-studio/jbr ./gradlew testDebugUnitTest` | **BUILD SUCCESSFUL**, đạt **29/29 bài kiểm thử (100%)**, thời gian thực thi 1.1s |
-| `JAVA_HOME=/opt/android-studio/jbr ./gradlew lintDebug` | **BUILD SUCCESSFUL**, **0 lỗi biên dịch lint** |
+| Kiểm tra | Tổng | Đạt | Thất bại | Bỏ qua |
+|---|---:|---:|---:|---:|
+| Kiểm thử JVM | 75 | 75 | 0 | 0 |
+| Kiểm thử Android trên Pixel_4 Android 11 / API 30 | 66 | 66 | 0 | 0 |
+| Trong 66 bài Android: dịch vụ tích hợp thật | 8 | 8 | 0 | 0 |
+| Trong 66 bài Android: luồng giao diện tích hợp thật | 1 | 1 | 0 | 0 |
 
-Danh sách các nhóm kiểm thử đã xác minh thành công:
+Tổng cộng **141 bài khác nhau**, không cộng lại các nhóm con hoặc các lần chạy lặp. Lint có **0 lỗi, 54 cảnh báo**; không tắt kiểm tra để có kết quả đạt. APK debug đã tạo thành công.
 
-1. `PasswordHasherTest` (6 bài kiểm thử):
-   - Cùng một mật khẩu tạo ra hai chuỗi băm khác nhau do muối ngẫu nhiên (`salt`).
-   - Mật khẩu chính xác được xác minh thành công.
-   - Mật khẩu sai bị từ chối xác minh.
-   - Chuỗi băm sai định dạng (thiếu token, sai tiền tố, số vòng âm, Base64 hỏng) không gây sập ứng dụng và được từ chối an toàn.
-   - Chạy kiểm thử với mức 600.000 vòng lặp PBKDF2 theo khuyến nghị OWASP hoạt động chính xác.
-   - Muối giải mã có độ dài tối thiểu 16 byte và khóa dẫn xuất đạt 256 bit.
-2. `AuthServiceAndSessionManagerTest` (11 bài kiểm thử):
-   - Chuẩn hóa tên đăng nhập (cắt khoảng trắng, chuyển chữ thường).
-   - Đăng nhập Quản trị viên hợp lệ và lưu phiên.
-   - Đăng nhập Nhân viên hợp lệ và lưu phiên.
-   - Đăng nhập sai mật khẩu bị từ chối với thông báo tiếng Việt không làm lộ tài khoản.
-   - Đăng nhập tài khoản không tồn tại bị từ chối với cùng thông báo an toàn.
-   - Bỏ trống tên đăng nhập hoặc mật khẩu bị từ chối.
-   - Thực thi kiểm tra vai trò: ngăn cản Nhân viên dùng quyền Admin và ngược lại.
-   - Tự động hủy phiên SharedPreferences khi tài khoản bị xóa trong Room.
-   - Tự động hủy phiên SharedPreferences khi vai trò tài khoản bị thay đổi trong Room.
-   - Đăng xuất xóa sạch dữ liệu phiên lưu trữ.
-   - Xác nhận không có mật khẩu thô hoặc chuỗi băm lưu trong SharedPreferences.
-3. `DataInitializerUnitTest` (2 bài kiểm thử):
-   - Khởi tạo thành công tài khoản Quản trị viên và Nhân viên mẫu với mật khẩu băm.
-   - Đảm bảo tính idempotent: chạy nhiều lần không làm tăng số lượng tài khoản hoặc gây trùng lặp.
-4. `SchemaContractTest` và `ConstantsTest` (10 bài kiểm thử):
-   - Xác minh hợp đồng schema Room phiên bản 1 và các ràng buộc hằng số.
+Luồng giao diện dùng PBKDF2 và phiên thật: tạo nhân viên qua biểu mẫu, chấm công theo đồng hồ production và chờ 61 giây, tổng kết 180 giờ/4 giờ tăng ca, tính và tính lại 9.100.000 đồng, xác nhận thanh toán, xem lương cá nhân, mở lại Activity, đăng xuất và kiểm tra Back/màn hình bị bảo vệ. Các ca dịch vụ dùng Clock cố định và Room thật; bộ kiểm thử độc lập TV2 vẫn giữ adapter giả chỉ trong APK kiểm thử.
 
-Phần chưa kiểm chứng:
-- Bài kiểm thử `AuthInstrumentedTest` và `AppDatabaseTest` trong `src/androidTest/` đã được viết hoàn chỉnh nhưng chưa chạy trên thiết bị vật lý do môi trường hiện tại là máy chủ dòng lệnh headless không có KVM ảo hóa phần cứng cho emulator.
-
-Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để che giấu lỗi.
-
-### 12.1. Kết quả module nhân viên TV2 — 24/10/2026
-
-Đã chạy `gradlew.bat clean assembleDebug testDebugUnitTest lintDebug`, sau đó chạy lại `gradlew.bat assembleDebug testDebugUnitTest lintDebug connectedDebugAndroidTest` trên bản mã cuối:
-
-| Kiểm tra | Kết quả thực tế |
-|---|---|
-| APK debug và Room annotation processor | Thành công; schema `1.json` giữ nguyên |
-| Kiểm thử đơn vị | **26/26** đạt: 10 nền tảng + 16 validation nhân viên |
-| Kiểm thử trên Pixel_4 Android 11, API 30 | **40/40** đạt: 7 nền tảng + 25 Service/Room + 8 giao diện |
-| Lint | **0 lỗi**, 10 cảnh báo phần nền tảng |
-| Kiểm thử bỏ qua | **0** |
-
-Đã kiểm tra CRUD, chuẩn hóa, trùng dữ liệu, tìm kiếm chữ hoa/thường tiếng Việt và ký tự `%`/`_`, kiểm tra quyền trực tiếp ở Service, quyền đọc hồ sơ bản thân, xóa có lịch sử, rollback tạo/xóa hai bảng bằng trigger SQLite, tạo trùng đồng thời và xoay màn hình trong lúc lưu. Kiểm thử giao diện dùng adapter Auth giả trong APK kiểm thử; **chưa kiểm chứng PasswordHasher/session thật hoặc đăng nhập đến màn hình quản trị**.
+[Xem ma trận KT01–KT30 và bằng chứng](plans/reports/nghiem-thu-du-an.md). [Ảnh lương đã thanh toán](plans/reports/anh-nghiem-thu/nghiem-thu-luong-da-chot.png) và [ảnh lương cá nhân](plans/reports/anh-nghiem-thu/nghiem-thu-luong-ca-nhan.png) được vẽ từ View thật trên máy ảo. Kiểm tra bổ sung qua ADB đã xác nhận phiên ADMIN và dữ liệu Employee vẫn còn sau `am force-stop` rồi mở lại; đã phục hồi dữ liệu demo và đăng xuất. Chưa kiểm thử trên thiết bị vật lý.
 
 ## 13. Giới hạn của phiên bản
 
-- Ứng dụng ngoại tuyến, dữ liệu chỉ nằm trên một thiết bị; không có backend, Firebase, REST API hoặc đồng bộ nhiều máy.
-- Không có đăng ký tài khoản công khai; tài khoản Quản trị viên được khởi tạo từ hệ thống, tài khoản Nhân viên do Quản trị viên tạo.
-- Không tính nghỉ trưa, ngày lễ, cuối tuần hoặc lương theo hợp đồng.
-- Một nhân viên chỉ có tối đa một phiên chấm công mỗi ngày; không hỗ trợ ca qua nửa đêm.
-- Màn hình `AdminPlaceholderActivity` và `EmployeePlaceholderActivity` là các màn hình điều phối tạm thời để kiểm thử phân quyền và đăng xuất trong khi chờ các màn hình chính thức từ TV2–TV5.
-- Đây là mô hình phân quyền của ứng dụng demo cục bộ, không thay thế bảo mật có máy chủ xác thực.
+Phiên bản hiện tại hoạt động ngoại tuyến trên một thiết bị, không có backend, đồng bộ hoặc tài khoản từ xa. Chính sách không tính nghỉ trưa, không cho giao diện chỉnh công quá hạn và không cho ca chấm công đi qua ngày. Chưa có kiểm chứng trên thiết bị vật lý. Việc hợp nhất vào main cần tuân thủ review của thành viên khác theo đặc tả.
 
 ## 14. Tài liệu đặc tả
 
-Tài liệu yêu cầu đầy đủ nằm tại [docs/DAC_TA_DU_AN.md](docs/DAC_TA_DU_AN.md). Đây là nguồn yêu cầu chính thức về nghiệp vụ, cơ sở dữ liệu, phân quyền, giao diện và tiêu chí nghiệm thu của dự án.
-
-## Quy định nhánh, commit và Pull Request
-
-- Nhánh `main` chứa nền tảng ổn định. Mỗi thành viên tạo nhánh từ `main` theo quy ước:
-  - `tinh-nang/nen-tang-dang-nhap` (TV1)
-  - `tinh-nang/quan-ly-nhan-vien` (TV2)
-  - `tinh-nang/cham-cong` (TV3)
-  - `tinh-nang/tinh-luong` (TV4)
-  - `tinh-nang/bao-cao-kiem-thu` (TV5)
-- Không commit `local.properties`, `.gradle/`, `build/`, `app/build/`, khóa bí mật hoặc mật khẩu thật.
-- Commit ngắn gọn, 4–12 từ, tiếng Việt có dấu, mô tả một thay đổi logic. Ví dụ: `Thiết lập cơ sở dữ liệu Room`, `Thêm chức năng đăng nhập theo vai trò`.
-- Không dùng thông điệp chung chung như `update`, `fix`, `done`, `WIP` hoặc commit tiếng Anh.
-- Pull Request phải có tiêu đề và mô tả tiếng Việt, gồm: mục tiêu, thay đổi chính, cách kiểm thử và kết quả thực tế, lưu ý tương thích. Không force push lên `main`.
+Đọc [Đặc tả dự án và kế hoạch triển khai](docs/DAC_TA_DU_AN.md) để xem schema, hợp đồng module, chính sách nghiệp vụ, ma trận `KT01`–`KT30`, kịch bản demo và tiêu chí nghiệm thu. Báo cáo bằng chứng trạng thái được lưu tại [plans/reports/nghiem-thu-du-an.md](plans/reports/nghiem-thu-du-an.md).
