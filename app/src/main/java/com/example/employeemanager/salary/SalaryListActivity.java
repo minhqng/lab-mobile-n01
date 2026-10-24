@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +34,8 @@ import java.util.Map;
  * <p>Kiến trúc tuân thủ nghiêm ngặt Activity → Service. Mọi thao tác đọc dữ liệu nhân viên
  * và bảng lương đều thông qua {@link SalaryService} có kiểm tra phân quyền, không gọi trực tiếp DAO.</p>
  */
-public class SalaryListActivity extends AppCompatActivity {
+public class SalaryListActivity extends com.example.employeemanager.auth.ProtectedActivity {
+    @Override protected String requiredRole() { return com.example.employeemanager.util.Constants.ROLE_ADMIN; }
 
     private Spinner spMonth;
     private Spinner spYear;
@@ -55,6 +55,7 @@ public class SalaryListActivity extends AppCompatActivity {
     private int selectedMonth;
     private int selectedYear;
     private boolean isOperating = false;
+    private int loadGeneration;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,8 +70,7 @@ public class SalaryListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onSessionReady() {
         loadEmployeesAndSalaries();
     }
 
@@ -173,12 +173,12 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (SecurityException e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_permission_denied));
+                    showToast(getString(R.string.luong_error_permission_denied)); finish();
                 });
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
+                    showToast(getString(R.string.bc_data_error));
                 });
             }
         });
@@ -206,6 +206,7 @@ public class SalaryListActivity extends AppCompatActivity {
     }
 
     private void loadSalariesForCurrentPeriod() {
+        int expected = ++loadGeneration;
         if (!isOperating) {
             setOperatingState(true);
         }
@@ -218,6 +219,7 @@ public class SalaryListActivity extends AppCompatActivity {
                 // Tải danh sách bảng lương qua Service có kiểm tra quyền ADMIN
                 List<Salary> salaries = salaryService.getSalariesByMonth(month, year);
                 AppExecutors.runOnMainThread(() -> {
+                    if (expected != loadGeneration || isFinishing() || isDestroyed()) return;
                     setOperatingState(false);
                     salaryAdapter.setData(salaries, employeeMap);
                     tvEmptyState.setVisibility((salaries == null || salaries.isEmpty())
@@ -226,12 +228,12 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (SecurityException e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_permission_denied));
+                    showToast(getString(R.string.luong_error_permission_denied)); finish();
                 });
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
+                    showToast(getString(R.string.bc_data_error));
                 });
             }
         });
@@ -266,7 +268,7 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (SecurityException e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_permission_denied));
+                    showToast(getString(R.string.luong_error_permission_denied)); finish();
                 });
             } catch (IllegalStateException | IllegalArgumentException e) {
                 AppExecutors.runOnMainThread(() -> {
@@ -276,7 +278,7 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_generic), e.getMessage()));
+                    showToast(getString(R.string.bc_data_error));
                 });
             }
         });

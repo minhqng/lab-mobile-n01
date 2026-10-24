@@ -209,6 +209,12 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Nút xác nhận đã thanh toán -->
+        <TextView android:id="@+id/tvDetailRegularHours" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="16sp" />
+        <TextView android:id="@+id/tvDetailCurrentRate" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="16sp" />
+        <Button android:id="@+id/btnRecalculate" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/bc_recalculate" />
         <Button
             android:id="@+id/btnConfirmPaid"
             android:layout_width="match_parent"

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+        android:name=".EmployeeManagerApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -51,6 +52,10 @@
             android:name=".salary.SalaryDetailActivity"
             android:exported="false" />
 
+        <activity android:name=".reports.AdminDashboardActivity" android:exported="false" />
+        <activity android:name=".reports.EmployeeDashboardActivity" android:exported="false" />
+        <activity android:name=".reports.MonthlySummaryActivity" android:exported="false" />
+        <activity android:name=".reports.MySalaryActivity" android:exported="false" />
     </application>
 
 </manifest>

@@ -176,4 +176,27 @@
     <string name="luong_format_period">Tháng %1$02d/%2$d</string>
     <string name="luong_format_currency">%1$s %2$s</string>
     <string name="luong_format_error_detail">%1$s: %2$s</string>
+    <string name="bc_admin_title">Tổng quan quản trị</string>
+    <string name="bc_employee_title">Trang nhân viên</string>
+    <string name="bc_monthly_title">Tổng kết tháng</string>
+    <string name="bc_my_salary">Lương của tôi</string>
+    <string name="bc_load">Xem tháng đã chọn</string>
+    <string name="bc_refresh">Làm mới thông tin</string>
+    <string name="bc_loaded">Dữ liệu tháng %1$02d/%2$d</string>
+    <string name="bc_permission_error">Phiên hết hiệu lực hoặc bạn không có quyền truy cập</string>
+    <string name="bc_data_error">Không thể xử lý dữ liệu. Vui lòng kiểm tra và thử lại.</string>
+    <string name="bc_empty_work">Chưa có công trong tháng</string>
+    <string name="bc_no_salary">Chưa có bảng lương tháng này</string>
+    <string name="bc_hours">%1$s giờ</string>
+    <string name="bc_money">%1$s đ</string>
+    <string name="bc_company_summary">Số nhân viên: %1$d\nTổng giờ hoàn tất: %2$s\nTổng lương đã tính: %3$s\nLương nháp: %4$s\nLương đã thanh toán: %5$s</string>
+    <string name="bc_month_summary">Số ngày hoàn tất: %1$d\nTổng giờ: %2$s\nGiờ thường: %3$s\nGiờ tăng ca: %4$s</string>
+    <string name="bc_salary_summary">Tổng giờ: %1$s\nGiờ thường: %2$s\nGiờ tăng ca: %3$s\nTổng lương: %4$s\nTrạng thái: %5$s</string>
+    <string name="bc_employee_summary">Xin chào %1$s\nMã nhân viên: %2$s\nEmail: %3$s\nĐiện thoại: %4$s\nĐơn giá hiện tại: %5$s/giờ\nChấm công hôm nay: %6$s</string>
+    <string name="bc_not_checked_in">Chưa chấm công vào</string>
+    <string name="bc_regular_hours">Giờ thường: %1$s</string>
+    <string name="bc_current_rate">Đơn giá hiện tại: %1$s/giờ (không phải đơn giá lịch sử)</string>
+    <string name="bc_recalculate">Tính lại lương nháp</string>
+    <string name="bc_calculating">Đang tính lương…</string>
+    <string name="bc_paid_lock">Kỳ đã thanh toán được giữ nguyên</string>
 </resources>

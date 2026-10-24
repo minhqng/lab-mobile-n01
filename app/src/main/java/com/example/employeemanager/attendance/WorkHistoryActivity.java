@@ -1,6 +1,6 @@
 package com.example.employeemanager.attendance;
 
-import android.content.SharedPreferences;
+import com.example.employeemanager.auth.SessionManager;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -8,7 +8,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +21,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkHistoryActivity extends AppCompatActivity {
+public class WorkHistoryActivity extends com.example.employeemanager.auth.ProtectedActivity {
+    @Override protected String requiredRole() { return com.example.employeemanager.util.Constants.ROLE_EMPLOYEE; }
 
     private RecyclerView recyclerView;
     private TextView textState;
@@ -31,6 +31,7 @@ public class WorkHistoryActivity extends AppCompatActivity {
     private Spinner spinnerYear;
     private WorkLogAdapter adapter;
     private AttendanceService attendanceService;
+    private int loadGeneration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +51,14 @@ public class WorkHistoryActivity extends AppCompatActivity {
 
         setupSpinners();
 
-        SharedPreferences preferences = getSharedPreferences(
-                AttendanceSessionContract.PREFERENCES_NAME, MODE_PRIVATE);
         AppDB database = AppDB.getInstance(getApplicationContext());
-        attendanceService = new AttendanceService(
-                database.workLogDao(),
-                database.salaryDao(),
-                new SharedPreferenceSessionProvider(
-                        preferences, database.accountDao(), database.employeeDao()),
+        attendanceService = new AttendanceService(database, new AuthSessionProvider(new SessionManager(this, database)),
                 DateTimeUtils.systemClock());
 
         buttonLoad.setOnClickListener(v -> loadHistory());
-        loadHistory();
     }
+
+    @Override protected void onSessionReady() { loadHistory(); }
 
     private void setupSpinners() {
         List<String> months = new ArrayList<>();
@@ -79,11 +75,12 @@ public class WorkHistoryActivity extends AppCompatActivity {
         }
         spinnerYear.setAdapter(new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, years));
-        spinnerMonth.setSelection(LocalDate.now().getMonthValue() - 1);
+        spinnerMonth.setSelection(DateTimeUtils.today(DateTimeUtils.systemClock()).getMonthValue() - 1);
         spinnerYear.setSelection(2);
     }
 
     private void loadHistory() {
+        int expected = ++loadGeneration;
         int month;
         int year;
         try {
@@ -103,18 +100,22 @@ public class WorkHistoryActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             List<WorkLog> logs;
+            long totalMinutes = 0, overtime = 0;
             String error = null;
             try {
                 logs = attendanceService.getAttendanceHistory(month, year);
+                totalMinutes = AttendanceSummaryCalculator.completedMinutes(logs);
+                overtime = AttendanceSummaryCalculator.overtimeMinutes(logs);
             } catch (Exception exception) {
                 logs = new ArrayList<>();
-                error = exception.getMessage();
+                error = exception instanceof AttendanceException ? exception.getMessage() : errorText(exception);
             }
             final List<WorkLog> result = logs;
             final String finalError = error;
-            final long totalMinutes = AttendanceSummaryCalculator.completedMinutes(result);
-            final long overtime = AttendanceSummaryCalculator.overtimeMinutes(result);
+            final long minutesResult = totalMinutes;
+            final long overtimeResult = overtime;
             AppExecutors.runOnMainThread(() -> {
+                if (expected != loadGeneration || isFinishing() || isDestroyed()) return;
                 if (finalError != null) {
                     textState.setText(finalError);
                     textSummary.setText(getString(R.string.cong_history_summary_empty));
@@ -129,9 +130,9 @@ public class WorkHistoryActivity extends AppCompatActivity {
                     textState.setText(getString(R.string.cong_loaded_count, result.size()));
                     textSummary.setText(getString(R.string.cong_history_summary,
                             DateTimeUtils.formatHours(
-                                    WorkHourCalculator.minutesToHours(totalMinutes)),
+                                    WorkHourCalculator.minutesToHours(minutesResult)),
                             DateTimeUtils.formatHours(
-                                    WorkHourCalculator.minutesToHours(overtime))));
+                                    WorkHourCalculator.minutesToHours(overtimeResult))));
                 }
             });
         });

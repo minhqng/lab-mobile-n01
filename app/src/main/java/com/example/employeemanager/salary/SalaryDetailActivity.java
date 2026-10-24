@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.employeemanager.R;
@@ -28,7 +27,8 @@ import java.util.Locale;
  * <p>Kiến trúc tuân thủ nghiêm ngặt Activity → Service. Mọi thao tác đọc dữ liệu và chốt thanh toán
  * đều thông qua {@link SalaryService} có kiểm tra phân quyền, không gọi trực tiếp DAO.</p>
  */
-public class SalaryDetailActivity extends AppCompatActivity {
+public class SalaryDetailActivity extends com.example.employeemanager.auth.ProtectedActivity {
+    @Override protected String requiredRole() { return com.example.employeemanager.util.Constants.ROLE_ADMIN; }
 
     public static final String EXTRA_SALARY_ID = "EXTRA_SALARY_ID";
 
@@ -48,6 +48,7 @@ public class SalaryDetailActivity extends AppCompatActivity {
     private long salaryId = -1L;
     private Salary currentSalary;
     private boolean isOperating = false;
+    private AlertDialog paidDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,11 +66,12 @@ public class SalaryDetailActivity extends AppCompatActivity {
         }
 
         btnConfirmPaid.setOnClickListener(v -> showConfirmPaidDialog());
+        findViewById(R.id.btnRecalculate).setOnClickListener(v -> recalculate());
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onSessionReady() {
+        setOperatingState(false);
         loadSalaryDetails();
     }
 
@@ -121,19 +123,26 @@ public class SalaryDetailActivity extends AppCompatActivity {
             } catch (SecurityException e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_permission_denied));
+                    showToast(getString(R.string.luong_error_permission_denied)); finish();
                     finish();
                 });
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
+                    showToast(getString(R.string.bc_data_error));
                 });
             }
         });
     }
 
     private void displaySalaryInfo(Salary salary, Employee employee) {
+        ((TextView) findViewById(R.id.tvDetailRegularHours)).setText(getString(R.string.bc_regular_hours,
+                getString(R.string.luong_format_hours, salary.totalHours - salary.overtimeHours,
+                        getString(R.string.luong_unit_hours))));
+        TextView rate = findViewById(R.id.tvDetailCurrentRate);
+        rate.setText(employee == null ? "" : getString(R.string.bc_current_rate,
+                getString(R.string.bc_money, NumberFormat.getIntegerInstance(new Locale("vi", "VN")).format(employee.hourlyRate))));
+        findViewById(R.id.btnRecalculate).setVisibility(Constants.STATUS_DRAFT.equals(salary.status) ? View.VISIBLE : View.GONE);
         if (employee != null) {
             tvDetailEmployeeCode.setText(employee.code);
             tvDetailEmployeeName.setText(employee.fullname);
@@ -165,6 +174,9 @@ public class SalaryDetailActivity extends AppCompatActivity {
             tvDetailStatus.setBackgroundResource(R.drawable.bg_status_draft);
             tvDetailStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_orange_dark));
             btnConfirmPaid.setEnabled(true);
+            boolean ended = java.time.YearMonth.of(salary.year, salary.month).isBefore(
+                    java.time.YearMonth.now(java.time.ZoneId.of(Constants.TIME_ZONE_ID)));
+            btnConfirmPaid.setEnabled(ended);
             btnConfirmPaid.setVisibility(View.VISIBLE);
         }
     }
@@ -172,12 +184,32 @@ public class SalaryDetailActivity extends AppCompatActivity {
     private void showConfirmPaidDialog() {
         if (currentSalary == null || isOperating) return;
 
-        new AlertDialog.Builder(this)
+        paidDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.luong_confirm_paid_title)
                 .setMessage(R.string.luong_confirm_paid_message)
                 .setPositiveButton(R.string.luong_confirm_yes, (dialog, which) -> performConfirmPaid())
                 .setNegativeButton(R.string.luong_confirm_no, null)
                 .show();
+    }
+
+    @Override protected void onDestroy() {
+        if (paidDialog != null) paidDialog.dismiss();
+        super.onDestroy();
+    }
+
+    private void recalculate() {
+        if (currentSalary == null || isOperating || !Constants.STATUS_DRAFT.equals(currentSalary.status)) return;
+        setOperatingState(true);
+        findViewById(R.id.btnRecalculate).setEnabled(false);
+        runTask(() -> salaryService.generateMonthlySalary(currentSalary.employeeId, currentSalary.month, currentSalary.year), salary -> {
+            setOperatingState(false);
+            findViewById(R.id.btnRecalculate).setEnabled(true);
+            loadSalaryDetails();
+        }, error -> {
+            setOperatingState(false);
+            findViewById(R.id.btnRecalculate).setEnabled(true);
+            showToast(errorText(error));
+        });
     }
 
     private void performConfirmPaid() {
@@ -189,13 +221,14 @@ public class SalaryDetailActivity extends AppCompatActivity {
                 // Chốt thanh toán qua Service có kiểm tra quyền ADMIN
                 salaryService.confirmSalaryPaid(salaryId);
                 AppExecutors.runOnMainThread(() -> {
+                    setOperatingState(false);
                     showToast(getString(R.string.luong_msg_paid_success));
                     loadSalaryDetails();
                 });
             } catch (SecurityException e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_permission_denied));
+                    showToast(getString(R.string.luong_error_permission_denied)); finish();
                 });
             } catch (IllegalStateException | IllegalArgumentException e) {
                 AppExecutors.runOnMainThread(() -> {
@@ -205,7 +238,7 @@ public class SalaryDetailActivity extends AppCompatActivity {
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_generic), e.getMessage()));
+                    showToast(getString(R.string.bc_data_error));
                 });
             }
         });

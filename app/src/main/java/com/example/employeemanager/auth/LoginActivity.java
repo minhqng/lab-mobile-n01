@@ -1,6 +1,8 @@
 package com.example.employeemanager.auth;
 
 import android.content.Intent;
+import com.example.employeemanager.reports.AdminDashboardActivity;
+import com.example.employeemanager.reports.EmployeeDashboardActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -34,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialButton btnLogin;
 
     private SessionManager sessionManager;
+    private LoginState loginState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +48,18 @@ public class LoginActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
+        loginState = new androidx.lifecycle.ViewModelProvider(this).get(LoginState.class);
+        loginState.loading.observe(this, this::setLoadingState);
+        loginState.result.observe(this, result -> {
+            if (result == null) return;
+            loginState.result.setValue(null);
+            if (result.isSuccess()) navigateToRoleDashboard(result.getRole());
+            else {
+                etPassword.setText("");
+                tvError.setText(result.getErrorMessage());
+                tvError.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void initViews() {
@@ -86,31 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Khóa giao diện và bật thanh tiến trình để chống nhấn nút nhiều lần
-        setLoadingState(true);
-
-        // Chạy xác thực trên luồng nền
-        AppExecutors.databaseExecutor().execute(() -> {
-            AuthResult result = sessionManager.login(username, password);
-
-            // Cập nhật giao diện trên luồng chính
-            AppExecutors.runOnMainThread(() -> {
-                if (isFinishing() || isDestroyed()) {
-                    return;
-                }
-
-                setLoadingState(false);
-
-                if (result.isSuccess()) {
-                    navigateToRoleDashboard(result.getRole());
-                } else {
-                    // Xóa mật khẩu khỏi trường nhập sau khi đăng nhập lỗi
-                    etPassword.setText("");
-                    tvError.setText(result.getErrorMessage());
-                    tvError.setVisibility(View.VISIBLE);
-                }
-            });
-        });
+        loginState.login(sessionManager, username, password, getString(R.string.bc_data_error));
     }
 
     private void setLoadingState(boolean isLoading) {
@@ -123,9 +114,9 @@ public class LoginActivity extends AppCompatActivity {
     private void navigateToRoleDashboard(String role) {
         Intent intent;
         if (Constants.ROLE_ADMIN.equals(role)) {
-            intent = new Intent(this, AdminPlaceholderActivity.class);
+            intent = new Intent(this, AdminDashboardActivity.class);
         } else if (Constants.ROLE_EMPLOYEE.equals(role)) {
-            intent = new Intent(this, EmployeePlaceholderActivity.class);
+            intent = new Intent(this, EmployeeDashboardActivity.class);
         } else {
             // Vai trò không hợp lệ, đăng xuất ngay
             sessionManager.logout();

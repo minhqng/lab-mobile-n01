@@ -1,12 +1,11 @@
 package com.example.employeemanager.attendance;
 
-import android.content.SharedPreferences;
+import com.example.employeemanager.auth.SessionManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.employeemanager.R;
 import com.example.employeemanager.data.AppDB;
@@ -14,7 +13,8 @@ import com.example.employeemanager.data.entities.WorkLog;
 import com.example.employeemanager.util.AppExecutors;
 import com.example.employeemanager.util.DateTimeUtils;
 
-public class AttendanceActivity extends AppCompatActivity {
+public class AttendanceActivity extends com.example.employeemanager.auth.ProtectedActivity {
+    @Override protected String requiredRole() { return com.example.employeemanager.util.Constants.ROLE_EMPLOYEE; }
 
     private TextView textDate;
     private TextView textTime;
@@ -25,6 +25,16 @@ public class AttendanceActivity extends AppCompatActivity {
     private Button buttonCheckOut;
 
     private AttendanceService attendanceService;
+    private final android.os.Handler timeHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable updateClock = new Runnable() {
+        @Override public void run() {
+            textDate.setText(getString(R.string.cong_date_value,
+                    DateTimeUtils.formatDate(DateTimeUtils.today(attendanceService.getClock()))));
+            textTime.setText(getString(R.string.cong_time_value,
+                    DateTimeUtils.formatTime(DateTimeUtils.nowTime(attendanceService.getClock()))));
+            timeHandler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +51,7 @@ public class AttendanceActivity extends AppCompatActivity {
         Button buttonHistory = findViewById(R.id.buttonWorkHistory);
 
         AppDB database = AppDB.getInstance(getApplicationContext());
-        SharedPreferences preferences = getSharedPreferences(
-                AttendanceSessionContract.PREFERENCES_NAME, MODE_PRIVATE);
-        attendanceService = new AttendanceService(
-                database.workLogDao(),
-                database.salaryDao(),
-                new SharedPreferenceSessionProvider(
-                        preferences, database.accountDao(), database.employeeDao()),
+        attendanceService = new AttendanceService(database, new AuthSessionProvider(new SessionManager(this, database)),
                 DateTimeUtils.systemClock());
 
         buttonCheckIn.setOnClickListener(v -> doCheckIn());
@@ -55,13 +59,18 @@ public class AttendanceActivity extends AppCompatActivity {
         buttonHistory.setOnClickListener(v ->
                 startActivity(new android.content.Intent(this, WorkHistoryActivity.class)));
 
-        refresh();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onSessionReady() {
         refresh();
+        timeHandler.removeCallbacks(updateClock);
+        timeHandler.post(updateClock);
+    }
+
+    @Override protected void onPause() {
+        timeHandler.removeCallbacks(updateClock);
+        super.onPause();
     }
 
     private void refresh() {
@@ -81,13 +90,14 @@ public class AttendanceActivity extends AppCompatActivity {
             try {
                 result.log = attendanceService.getTodayWorkLog();
             } catch (Exception exception) {
-                result.error = exception.getMessage();
+                result.error = exception instanceof AttendanceException ? exception.getMessage() : errorText(exception);
             }
             AppExecutors.runOnMainThread(() -> applyRefresh(result));
         });
     }
 
     private void applyRefresh(WorkLogResult result) {
+        if (isFinishing() || isDestroyed()) return;
         if (result.error != null) {
             textCheckIn.setText(result.error);
             textCheckOut.setText("");
@@ -101,7 +111,7 @@ public class AttendanceActivity extends AppCompatActivity {
         if (log == null) {
             textCheckIn.setText(getString(R.string.cong_checkin_none));
             textCheckOut.setText(getString(R.string.cong_checkout_none));
-            textStatus.setText(getString(R.string.cong_status_open));
+            textStatus.setText(R.string.bc_not_checked_in);
             buttonCheckIn.setEnabled(true);
             buttonCheckOut.setEnabled(false);
             return;
@@ -131,7 +141,7 @@ public class AttendanceActivity extends AppCompatActivity {
                 message = getString(R.string.cong_checkin_success,
                         DateTimeUtils.formatTime(log.checkInTime));
             } catch (Exception exception) {
-                message = exception.getMessage();
+                message = exception instanceof AttendanceException ? exception.getMessage() : errorText(exception);
             }
             final String finalMessage = message;
             AppExecutors.runOnMainThread(() -> {
@@ -151,7 +161,7 @@ public class AttendanceActivity extends AppCompatActivity {
                         + getString(R.string.cong_hours_today,
                         DateTimeUtils.formatHours(log.totalHours));
             } catch (Exception exception) {
-                message = exception.getMessage();
+                message = exception instanceof AttendanceException ? exception.getMessage() : errorText(exception);
             }
             final String finalMessage = message;
             AppExecutors.runOnMainThread(() -> {

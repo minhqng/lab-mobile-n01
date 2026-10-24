@@ -5,8 +5,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.employeemanager.auth.AdminPlaceholderActivity;
-import com.example.employeemanager.auth.EmployeePlaceholderActivity;
+import com.example.employeemanager.reports.AdminDashboardActivity;
+import com.example.employeemanager.reports.EmployeeDashboardActivity;
 import com.example.employeemanager.auth.LoginActivity;
 import com.example.employeemanager.auth.SessionData;
 import com.example.employeemanager.auth.SessionManager;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         SessionManager sessionManager = new SessionManager(this, appDb);
 
         AppExecutors.databaseExecutor().execute(() -> {
+            try {
             // 1. Đảm bảo khởi tạo tài khoản quản trị viên và dữ liệu demo nếu cơ sở dữ liệu mới
             DataInitializer.initializeInitialData(appDb);
 
@@ -51,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
                 if (session == null) {
                     targetIntent = new Intent(MainActivity.this, LoginActivity.class);
                 } else if (Constants.ROLE_ADMIN.equals(session.getRole())) {
-                    targetIntent = new Intent(MainActivity.this, AdminPlaceholderActivity.class);
+                    targetIntent = new Intent(MainActivity.this, AdminDashboardActivity.class);
                 } else if (Constants.ROLE_EMPLOYEE.equals(session.getRole())) {
-                    targetIntent = new Intent(MainActivity.this, EmployeePlaceholderActivity.class);
+                    targetIntent = new Intent(MainActivity.this, EmployeeDashboardActivity.class);
                 } else {
                     // Phiên không hợp lệ, đăng xuất và về màn hình đăng nhập
                     sessionManager.logout();
@@ -64,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(targetIntent);
                 finish();
             });
+            } catch (Exception error) {
+                AppExecutors.runOnMainThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    android.widget.TextView status = findViewById(R.id.textFoundationReady);
+                    status.setText(R.string.bc_data_error);
+                    status.setOnClickListener(view -> dispatchSession());
+                });
+            }
         });
     }
 }
