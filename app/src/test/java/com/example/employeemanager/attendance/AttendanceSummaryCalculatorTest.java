@@ -12,6 +12,13 @@ import java.util.List;
 
 public class AttendanceSummaryCalculatorTest {
 
+    @Test public void tongKetLayPhutTuGioGocKhongTuSoGioDaLuu() {
+        WorkLog log = new WorkLog(1, "2026-09-01", "08:00:10", "18:00:05", 0,
+                Constants.STATUS_COMPLETED);
+        assertEquals(599, AttendanceSummaryCalculator.completedMinutes(java.util.Collections.singletonList(log)));
+        assertEquals(119, AttendanceSummaryCalculator.overtimeMinutes(java.util.Collections.singletonList(log)));
+    }
+
     @Test
     public void openLogsAreExcludedFromTotals() {
         List<WorkLog> logs = new ArrayList<>();

@@ -20,6 +20,13 @@ import java.util.List;
  */
 public class SalaryCalculatorTest {
 
+    @Test public void tuChoiTongTienVuotPhamViLong() {
+        WorkLog log = new WorkLog(1, "2026-09-01", "08:00:00", "18:00:00", 10,
+                Constants.STATUS_COMPLETED);
+        assertThrows(ArithmeticException.class, () -> new SalaryCalculator()
+                .calculateSalaryBreakdown(Collections.singletonList(log), Long.MAX_VALUE));
+    }
+
     private static final double DELTA = 0.0001;
     private SalaryCalculator calculator;
 
