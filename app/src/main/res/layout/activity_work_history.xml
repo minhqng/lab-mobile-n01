@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textHistoryTitle"
+        style="@style/TextAppearance.EmployeeManager.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cong_history_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinnerMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/spinnerYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/buttonLoadHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/cong_button_load" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textHistoryState"
+        style="@style/TextAppearance.EmployeeManager.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/textHistorySummary"
+        style="@style/TextAppearance.EmployeeManager.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/cong_history_summary_empty" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerWorkHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1" />
+</LinearLayout>

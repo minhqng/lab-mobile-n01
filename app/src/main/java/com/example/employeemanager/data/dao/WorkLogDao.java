@@ -47,8 +47,15 @@ public interface WorkLogDao {
     WorkLog findOpenByEmployeeAndMonth(long employeeId, String monthKey);
 
     @Query("SELECT * FROM WorkLog WHERE employeeId = :employeeId "
-            + "AND substr(workDate, 1, 7) = :monthKey ORDER BY workDate ASC")
+            + "AND substr(workDate, 1, 7) = :monthKey ORDER BY workDate DESC")
     List<WorkLog> findByEmployeeAndMonth(long employeeId, String monthKey);
+
+    /**
+     * Cập nhật check-out chỉ khi bản ghi còn OPEN, giúp giảm race condition.
+     */
+    @Query("UPDATE WorkLog SET checkOutTime = :checkOutTime, totalHours = :totalHours, "
+            + "status = :status WHERE id = :id AND status = 'OPEN'")
+    int updateCheckoutIfOpen(long id, String checkOutTime, double totalHours, String status);
 
     @Query("SELECT * FROM WorkLog WHERE employeeId = :employeeId AND status = 'COMPLETED' "
             + "AND substr(workDate, 1, 7) = :monthKey ORDER BY workDate ASC")

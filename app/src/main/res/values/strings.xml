@@ -90,4 +90,44 @@
     <string name="nv_xoa_thanh_cong">Xóa nhân viên thành công</string>
     <string name="nv_huong_dan_form">Nhập đầy đủ thông tin rồi chọn Lưu</string>
     <string name="nv_gia_tri_don_gia">%1$s đ/giờ</string>
+    <!-- Chấm công: prefix cong_ -->
+    <string name="cong_title">Chấm công</string>
+    <string name="cong_date_label">Ngày làm việc</string>
+    <string name="cong_time_label">Giờ hiện tại</string>
+    <string name="cong_date_value">Ngày làm việc: %1$s</string>
+    <string name="cong_time_value">Giờ hiện tại: %1$s</string>
+    <string name="cong_checkin_value">Giờ vào: %1$s</string>
+    <string name="cong_checkout_value">Giờ ra: %1$s</string>
+    <string name="cong_checkin_none">Giờ vào: Chưa chấm công vào</string>
+    <string name="cong_checkout_none">Giờ ra: Chưa chấm công ra</string>
+    <string name="cong_status_open">Trạng thái: Đang làm việc</string>
+    <string name="cong_status_completed">Trạng thái: Đã hoàn tất</string>
+    <string name="cong_button_checkin">Chấm công vào</string>
+    <string name="cong_button_checkout">Chấm công ra</string>
+    <string name="cong_button_history">Xem lịch sử công</string>
+    <string name="cong_button_load">Tải</string>
+    <string name="cong_history_title">Lịch sử công</string>
+    <string name="cong_history_summary_empty">Chưa có dữ liệu công trong tháng</string>
+    <string name="cong_history_summary">Tổng giờ: %1$s; tăng ca: %2$s</string>
+    <string name="cong_checkin_success">Chấm công vào thành công lúc %1$s</string>
+    <string name="cong_checkout_success">Chấm công ra thành công</string>
+    <string name="cong_hours_today">Số giờ làm của ngày: %1$s</string>
+    <string name="cong_error_already_checked_in">Bạn đã chấm công vào hôm nay</string>
+    <string name="cong_error_open_previous">Bạn có lượt chấm công chưa hoàn tất</string>
+    <string name="cong_error_not_checked_in">Bạn chưa chấm công vào hôm nay</string>
+    <string name="cong_error_already_checked_out">Bạn đã chấm công ra hôm nay</string>
+    <string name="cong_error_checkout_before_checkin">Giờ chấm công ra phải sau giờ vào</string>
+    <string name="cong_error_cross_day">Ứng dụng chưa hỗ trợ ca làm qua ngày</string>
+    <string name="cong_error_paid_month">Tháng này đã chốt lương, không thể chấm công</string>
+    <string name="cong_error_no_session">Chưa có phiên đăng nhập</string>
+    <string name="cong_status_working">Đang làm việc</string>
+    <string name="cong_status_completed_label">Đã hoàn tất</string>
+    <string name="cong_checkout_missing">Chưa chấm công ra</string>
+    <string name="cong_work_times">Vào: %1$s  Ra: %2$s</string>
+    <string name="cong_work_hours">Số giờ: %1$s  Tăng ca: %2$s</string>
+    <string name="cong_status_unknown">Trạng thái không xác định</string>
+    <string name="cong_error_invalid_period">Tháng hoặc năm không hợp lệ</string>
+    <string name="cong_loading">Đang tải...</string>
+    <string name="cong_loaded_count">Đã tải %1$d bản ghi</string>
+
 </resources>

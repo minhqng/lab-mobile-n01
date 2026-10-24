@@ -35,6 +35,14 @@
             android:name=".auth.EmployeePlaceholderActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".attendance.AttendanceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".attendance.WorkHistoryActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
