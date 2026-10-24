@@ -102,10 +102,9 @@ public class SalaryCalculator {
 
         BigDecimal totalMinuteMoney = regularMoney.add(overtimeMoney);
 
-        BigDecimal unroundedSalary = totalMinuteMoney.divide(MINUTES_PER_HOUR, 10, RoundingMode.HALF_UP);
-        BigDecimal roundedSalary = unroundedSalary.setScale(0, RoundingMode.HALF_UP);
-
-        long totalSalaryVnd = roundedSalary.longValueExact();
+        long totalSalaryVnd = totalMinuteMoney
+                .divide(MINUTES_PER_HOUR, 0, RoundingMode.HALF_UP)
+                .longValueExact();
 
         return new SalaryBreakdown(
                 totalMinutes,
