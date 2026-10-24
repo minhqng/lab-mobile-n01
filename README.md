@@ -8,7 +8,7 @@
 
 Ứng dụng giúp quản trị viên quản lý nhân viên, theo dõi công và bảng lương; giúp nhân viên tự chấm công, xem lịch sử làm việc và tiền lương của chính mình. Ứng dụng hoạt động hoàn toàn ngoại tuyến trên một thiết bị, dữ liệu được lưu cục bộ bằng Room/SQLite, không có máy chủ và không đồng bộ giữa nhiều điện thoại.
 
-Phiên bản hiện tại là **nền tảng kỹ thuật (task NEN-01)**: dự án đã build và chạy được, cơ sở dữ liệu đã có đủ bốn bảng, các module nghiệp vụ sẽ được phát triển ở giai đoạn tiếp theo.
+Phiên bản hiện tại gồm **nền tảng kỹ thuật (NEN-01) và module quản lý nhân viên (TV2)**. Module nhân viên đã có nghiệp vụ, giao diện và kiểm thử độc lập; vẫn chờ Authentication của TV1 để sử dụng từ luồng đăng nhập thật. Launcher hiện giữ nguyên màn hình nền tảng.
 
 ## 3. Tính năng chính
 
@@ -24,10 +24,19 @@ Phiên bản hiện tại là **nền tảng kỹ thuật (task NEN-01)**: dự 
 - Màn hình khởi động tối thiểu hiển thị tiếng Việt.
 - Kiểm thử hợp đồng schema và kiểm thử ràng buộc cơ sở dữ liệu đã chạy thực tế.
 
+**Đã triển khai trong module nhân viên:**
+
+- Danh sách RecyclerView, tìm kiếm theo mã/họ tên/email, trạng thái tải/rỗng/lỗi và thử lại.
+- Biểu mẫu thêm/sửa, lỗi tại trường nhập, kiểm tra đơn giá nguyên dương và tràn miền `long`.
+- Chi tiết, xác nhận xóa, giao dịch tạo/xóa Account–Employee; chặn xóa khi có công hoặc lương.
+- Service kiểm tra lại Account và role từ Room; nhân viên chỉ đọc hồ sơ của chính tài khoản phiên.
+- Giữ kết quả lưu/xóa qua xoay màn hình bằng ViewModel; truy vấn dùng `AppExecutors` ngoài luồng giao diện.
+- Không đổi bốn Entity, schema/version, cấu hình Gradle, launcher hoặc nghiệp vụ các module khác.
+
 **Chưa triển khai (sẽ thực hiện ở các task sau):**
 
 - Đăng nhập, phân quyền, lưu phiên bằng SharedPreferences và tài khoản Admin mẫu.
-- Thêm, sửa, xóa, tìm kiếm nhân viên.
+- Adapter Authentication thật cho module nhân viên: mặc định từ chối truy cập, không cấp quyền Admin giả và không tạo tài khoản khi chưa có bộ băm hợp lệ.
 - Chấm công vào/ra và lịch sử công.
 - Tính lương, tăng ca và chốt bảng lương `PAID`.
 - Dashboard và các màn hình báo cáo.
@@ -113,7 +122,7 @@ lab-mobile-n01/
         └── androidTest/java/.../AppDatabaseTest.java
 ```
 
-Các package `auth`, `employee`, `attendance`, `salary`, `reports` và `data/dto` sẽ được tạo khi có lớp thực sự cần thiết. Không tạo tệp rỗng chỉ để đủ cây thư mục.
+Package `employee` hiện chứa Service, DTO, validator, hợp đồng Auth, ba Activity, adapter và ViewModel giữ thao tác ghi. Các package `auth`, `attendance`, `salary`, `reports` và `data/dto` sẽ được tạo khi có lớp thực sự cần thiết. Không tạo tệp rỗng chỉ để đủ cây thư mục.
 
 ## 6. Yêu cầu môi trường
 
@@ -154,6 +163,22 @@ Có thể build và kiểm thử bằng dòng lệnh tại thư mục gốc:
 ```
 
 APK debug được tạo tại `app/build/outputs/apk/debug/app-debug.apk`.
+
+### 7.1. Tích hợp module nhân viên với TV1
+
+TV1 triển khai `employee.EmployeeAuth` và gọi `EmployeeModule.configure(adapter)` một lần trong `Application.onCreate()` trước khi mở màn hình nhân viên:
+
+- `long currentAccountId()`: lấy ID từ phiên đã xác thực; trả `0` khi không có phiên. Không nhận ID/role từ Intent và không cache role riêng. Service vẫn đọc lại Account trong Room trước khi cấp quyền.
+- `String hashPassword(String plainPassword)`: gọi `PasswordHasher` thật của TV1, trả chuỗi băm chậm có salt theo đặc tả; báo lỗi nếu bộ băm chưa sẵn sàng. Không lưu hoặc ghi nhật ký mật khẩu nhập. Các callback này được gọi trên luồng nền.
+- Mặc định chưa cấu hình: ID phiên bằng `0`, từ chối mọi truy cập; bộ băm mặc định báo chức năng chưa sẵn sàng. Không có SharedPreferences, tài khoản Admin hay thuật toán băm thay thế trong module TV2.
+
+Sau khi nối Auth, màn hình quản trị mở `EmployeeListActivity` bằng Intent nội bộ. Từ danh sách chọn thêm mới hoặc mở chi tiết để sửa/xóa. Các màn hình dùng khóa Intent `EmployeeActivity.EXTRA_EMPLOYEE_ID`; không chuyển Account/password/hash qua Intent. Tất cả Activity TV2 đặt `exported="false"` và kiểm tra quyền lại khi quay về màn hình.
+
+API Service giữ sáu phương thức tại mục 10.2 đặc tả. `CreateEmployeeRequest` nhận `code, fullname, email, phone, hourlyRate, username, password`; `UpdateEmployeeRequest` nhận năm trường đầu. `hourlyRate` trong request là chuỗi để kiểm tra input trước khi chuyển sang `long` trong Entity. Kết quả đọc không tồn tại báo `EmployeeException`; UI ánh xạ `messageRes` và `field` sang lỗi tiếng Việt. Các hàm Service chạy đồng bộ trên worker.
+
+Tìm kiếm trim từ khóa, đổi chữ thường bằng `Locale.ROOT`, lọc chuỗi con trên danh sách DAO đã sắp tên/mã. Hỗ trợ hoa/thường tiếng Việt, giữ nguyên dấu, coi `%` và `_` là ký tự thường; không tìm không dấu hoặc chuẩn hóa các cách mã hóa Unicode tương đương. Giải pháp lọc trong bộ nhớ phù hợp danh sách nhỏ của bài thực hành, chưa phân trang cho dữ liệu lớn.
+
+Chạy riêng kiểm thử màn hình trên máy ảo bằng `gradlew.bat connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.employeemanager.employee.EmployeeUiTest`. Auth/bộ băm giả chỉ nằm trong APK kiểm thử; dữ liệu kiểm thử có tiền tố `TV2-UI-`, được dọn sau mỗi bài. Ảnh giao diện do bài kiểm thử vẽ từ View thật được lưu trong thư mục `files/` nội bộ của ứng dụng với tên `nv-danh-sach.png`, `nv-bieu-mau.png`, `nv-chi-tiet.png`. Khi chạy Gradle, runner có thể gỡ APK và xóa ảnh sau kiểm thử; muốn lấy ảnh, cài hai APK rồi chạy `adb shell am instrument -w -e class com.example.employeemanager.employee.EmployeeUiTest com.example.employeemanager.test/androidx.test.runner.AndroidJUnitRunner` và đọc tệp qua `adb exec-out run-as com.example.employeemanager cat files/<tên-ảnh>.png`. Lưu stdout theo dạng nhị phân. Đây không phải bằng chứng đăng nhập tích hợp thật.
 
 ## 8. Tài khoản dùng thử
 
@@ -200,7 +225,7 @@ Khi được triển khai, cột `Account.password` chỉ lưu chuỗi băm PBKD
 4. Xem lịch sử công và tổng kết tháng của chính mình.
 5. Xem bảng lương tháng của chính mình.
 
-Các luồng trên **chưa hoạt động** ở phiên bản nền tảng; màn hình hiện tại chỉ hiển thị thông báo nền tảng đã được khởi tạo.
+Luồng đăng nhập và điều hướng theo vai trò **chưa hoạt động**. Giao diện/nghiệp vụ quản lý nhân viên đã có và được kiểm thử qua adapter chỉ dành cho kiểm thử; muốn thao tác từ ứng dụng thật cần hoàn thiện mục 7.1. Màn hình khởi động vẫn chỉ thông báo nền tảng đã được khởi tạo.
 
 ## 11. Phân công 5 thành viên
 
@@ -238,9 +263,23 @@ Nội dung đã kiểm chứng:
 Phần chưa kiểm chứng:
 
 - Chưa chạy trên thiết bị thật; kết quả instrumented test chỉ từ máy ảo Pixel_8 API 35.
-- Chưa có kiểm thử cho đăng nhập, CRUD nhân viên, chấm công và tính lương vì các module này chưa được triển khai.
+- Chưa kiểm thử đăng nhập, chấm công, tính lương và luồng nhân viên sau đăng nhập thật. Kết quả TV2 được cập nhật bên dưới; không sử dụng bộ băm giả trong production.
 
 Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để có kết quả xanh.
+
+### 12.1. Kết quả module nhân viên TV2 — 24/10/2026
+
+Đã chạy `gradlew.bat clean assembleDebug testDebugUnitTest lintDebug`, sau đó chạy lại `gradlew.bat assembleDebug testDebugUnitTest lintDebug connectedDebugAndroidTest` trên bản mã cuối:
+
+| Kiểm tra | Kết quả thực tế |
+|---|---|
+| APK debug và Room annotation processor | Thành công; schema `1.json` giữ nguyên |
+| Kiểm thử đơn vị | **26/26** đạt: 10 nền tảng + 16 validation nhân viên |
+| Kiểm thử trên Pixel_4 Android 11, API 30 | **40/40** đạt: 7 nền tảng + 25 Service/Room + 8 giao diện |
+| Lint | **0 lỗi**, 10 cảnh báo phần nền tảng |
+| Kiểm thử bỏ qua | **0** |
+
+Đã kiểm tra CRUD, chuẩn hóa, trùng dữ liệu, tìm kiếm chữ hoa/thường tiếng Việt và ký tự `%`/`_`, kiểm tra quyền trực tiếp ở Service, quyền đọc hồ sơ bản thân, xóa có lịch sử, rollback tạo/xóa hai bảng bằng trigger SQLite, tạo trùng đồng thời và xoay màn hình trong lúc lưu. Kiểm thử giao diện dùng adapter Auth giả trong APK kiểm thử; **chưa kiểm chứng PasswordHasher/session thật hoặc đăng nhập đến màn hình quản trị**. Báo cáo và ảnh thực nghiệm nằm tại [báo cáo kiểm thử nhân viên](plans/reports/kiem-thu-nhan-vien.md).
 
 ## 13. Giới hạn của phiên bản
 
