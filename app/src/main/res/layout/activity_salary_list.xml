@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".salary.SalaryListActivity">
+
+    <TextView
+        android:id="@+id/tvHeaderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/luong_title_list"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Bộ chọn kỳ lương Tháng / Năm -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/luong_label_month"
+            android:textStyle="bold"
+            android:layout_marginEnd="6dp" />
+
+        <Spinner
+            android:id="@+id/spMonth"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/luong_label_year"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="6dp" />
+
+        <Spinner
+            android:id="@+id/spYear"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- Chọn nhân viên cần tính lương -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/luong_label_select_employee"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp" />
+
+    <Spinner
+        android:id="@+id/spEmployee"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Các nút thao tác -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btnCalculateSalary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/luong_btn_calculate"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnRefresh"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/luong_btn_refresh"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+
+    <!-- Thanh tiến trình tải -->
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Thông báo rỗng -->
+    <TextView
+        android:id="@+id/tvEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/luong_empty_list"
+        android:textSize="15sp"
+        android:textColor="?android:textColorSecondary"
+        android:visibility="gone"
+        android:padding="24dp" />
+
+    <!-- Danh sách bảng lương -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSalaryList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false" />
+
+</LinearLayout>

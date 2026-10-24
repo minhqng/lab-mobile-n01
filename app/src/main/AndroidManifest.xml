@@ -18,6 +18,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".salary.SalaryListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".salary.SalaryDetailActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
