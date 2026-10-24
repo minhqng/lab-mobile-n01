@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -30,15 +31,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="NV001 - Nguyễn Văn An"
                 android:textStyle="bold"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="NV001 - Nguyễn Văn An" />
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bản nháp"
+                android:text="@string/luong_status_draft"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:paddingStart="8dp"
@@ -60,18 +61,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Tổng: 180h (Tăng ca: 4h)"
                 android:textSize="14sp"
-                android:textColor="?android:textColorSecondary" />
+                android:textColor="?android:textColorSecondary"
+                tools:text="Tổng: 180.00 giờ (Tăng ca: 4.00 giờ)" />
 
             <TextView
                 android:id="@+id/tvTotalSalary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9.100.000 đ"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#2E7D32" />
+                android:textColor="#2E7D32"
+                tools:text="9.100.000 đ" />
         </LinearLayout>
 
     </LinearLayout>
