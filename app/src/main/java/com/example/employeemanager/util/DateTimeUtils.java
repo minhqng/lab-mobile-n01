@@ -16,16 +16,16 @@ public final class DateTimeUtils {
     private static final ZoneId ZONE_ID = ZoneId.of(Constants.TIME_ZONE_ID);
 
     private static final DateTimeFormatter DATE_STORAGE_FORMATTER =
-            DateTimeFormatter.ofPattern(Constants.DATE_STORAGE_PATTERN);
+            DateTimeFormatter.ofPattern(Constants.DATE_STORAGE_PATTERN, java.util.Locale.ROOT);
 
     private static final DateTimeFormatter TIME_STORAGE_FORMATTER =
-            DateTimeFormatter.ofPattern(Constants.TIME_STORAGE_PATTERN);
+            DateTimeFormatter.ofPattern(Constants.TIME_STORAGE_PATTERN, java.util.Locale.ROOT);
 
     private static final DateTimeFormatter DATE_DISPLAY_FORMATTER =
-            DateTimeFormatter.ofPattern(Constants.DATE_DISPLAY_PATTERN);
+            DateTimeFormatter.ofPattern(Constants.DATE_DISPLAY_PATTERN, java.util.Locale.ROOT);
 
     private static final DateTimeFormatter TIME_DISPLAY_FORMATTER =
-            DateTimeFormatter.ofPattern(Constants.TIME_DISPLAY_PATTERN);
+            DateTimeFormatter.ofPattern(Constants.TIME_DISPLAY_PATTERN, java.util.Locale.ROOT);
 
     private DateTimeUtils() {
         // Lớp tiện ích không được khởi tạo.
@@ -72,11 +72,11 @@ public final class DateTimeUtils {
     }
 
     public static String monthKey(LocalDate date) {
-        return String.format("%04d-%02d", date.getYear(), date.getMonthValue());
+        return String.format(java.util.Locale.ROOT, "%04d-%02d", date.getYear(), date.getMonthValue());
     }
 
     public static String monthKey(int year, int month) {
-        return String.format("%04d-%02d", year, month);
+        return String.format(java.util.Locale.ROOT, "%04d-%02d", year, month);
     }
 
     public static String formatDate(LocalDate date) {

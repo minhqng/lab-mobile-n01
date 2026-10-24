@@ -69,6 +69,7 @@ public class SalaryService {
         validateMonthYear(month, year);
 
         return runInTransaction(() -> {
+            authorization.requireAdmin();
             Employee employee = appDb.employeeDao().findById(employeeId);
             if (employee == null) {
                 throw new IllegalArgumentException("Không tìm thấy nhân viên với ID: " + employeeId);
@@ -84,13 +85,16 @@ public class SalaryService {
             if (existingSalary != null && Constants.STATUS_PAID.equals(existingSalary.status)) {
                 throw new IllegalStateException("Bảng lương đã thanh toán, không thể tính lại");
             }
+            if (existingSalary != null && !Constants.STATUS_DRAFT.equals(existingSalary.status)) {
+                throw new IllegalStateException("Trạng thái bảng lương không hợp lệ");
+            }
 
             WorkLog openLog = appDb.workLogDao().findOpenByEmployeeAndMonth(employeeId, monthKey);
             if (openLog != null) {
                 throw new IllegalStateException("Tháng này còn lượt chấm công chưa hoàn tất");
             }
 
-            List<WorkLog> completedLogs = appDb.workLogDao().findCompletedByEmployeeAndMonth(employeeId, monthKey);
+            List<WorkLog> completedLogs = appDb.workLogDao().findByEmployeeAndMonth(employeeId, monthKey);
             SalaryBreakdown breakdown = calculator.calculateSalaryBreakdown(completedLogs, employee.hourlyRate);
 
             if (existingSalary == null) {
@@ -129,6 +133,7 @@ public class SalaryService {
      * @return đối tượng {@link Salary} hoặc {@code null} nếu chưa có.
      */
     public Salary getSalaryByMonth(long employeeId, int month, int year) {
+        authorization.requireAdmin();
         validateMonthYear(month, year);
         return appDb.salaryDao().findByEmployeeAndMonth(employeeId, month, year);
     }
@@ -167,6 +172,7 @@ public class SalaryService {
         authorization.requireAdmin();
 
         return runInTransaction(() -> {
+            authorization.requireAdmin();
             Salary salary = appDb.salaryDao().findById(salaryId);
             if (salary == null) {
                 throw new IllegalArgumentException("Không tìm thấy bảng lương với ID: " + salaryId);
@@ -177,7 +183,7 @@ public class SalaryService {
             }
 
             if (!Constants.STATUS_DRAFT.equals(salary.status)) {
-                throw new IllegalStateException("Bảng lương không ở trạng thái DRAFT: " + salary.status);
+                throw new IllegalStateException("Bảng lương không ở trạng thái nháp");
             }
 
             YearMonth targetMonth = YearMonth.of(salary.year, salary.month);

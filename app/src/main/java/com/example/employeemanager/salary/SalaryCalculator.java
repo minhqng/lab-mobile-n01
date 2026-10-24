@@ -3,10 +3,10 @@ package com.example.employeemanager.salary;
 import com.example.employeemanager.data.dto.SalaryBreakdown;
 import com.example.employeemanager.data.entities.WorkLog;
 import com.example.employeemanager.util.Constants;
+import com.example.employeemanager.attendance.WorkHourCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
 public class SalaryCalculator {
 
     private static final long STANDARD_MINUTES_PER_DAY = Constants.STANDARD_MINUTES_PER_DAY;
-    private static final BigDecimal OVERTIME_MULTIPLIER = BigDecimal.valueOf(15).divide(BigDecimal.valueOf(10));
+    private static final BigDecimal OVERTIME_MULTIPLIER = BigDecimal.valueOf(Constants.OVERTIME_MULTIPLIER);
     private static final BigDecimal MINUTES_PER_HOUR = BigDecimal.valueOf(60);
 
     /**
@@ -77,7 +77,7 @@ public class SalaryCalculator {
                         + ") phải sau giờ chấm công vào (" + log.checkInTime + ")");
             }
 
-            long dayMinutes = Duration.between(inTime, outTime).toMinutes();
+            long dayMinutes = WorkHourCalculator.calculateWorkMinutes(inTime, outTime);
             if (dayMinutes <= 0) {
                 throw new IllegalArgumentException("Thời gian làm việc trong ngày dưới 1 phút hoàn chỉnh");
             }
@@ -85,9 +85,9 @@ public class SalaryCalculator {
             long dayStandardMinutes = Math.min(dayMinutes, STANDARD_MINUTES_PER_DAY);
             long dayOvertimeMinutes = Math.max(0L, dayMinutes - STANDARD_MINUTES_PER_DAY);
 
-            totalMinutes += dayMinutes;
-            totalStandardMinutes += dayStandardMinutes;
-            totalOvertimeMinutes += dayOvertimeMinutes;
+            totalMinutes = Math.addExact(totalMinutes, dayMinutes);
+            totalStandardMinutes = Math.addExact(totalStandardMinutes, dayStandardMinutes);
+            totalOvertimeMinutes = Math.addExact(totalOvertimeMinutes, dayOvertimeMinutes);
         }
 
         double totalHours = totalMinutes / 60.0;

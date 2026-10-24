@@ -22,7 +22,7 @@ public final class AttendanceSummaryCalculator {
         }
         for (WorkLog log : logs) {
             if (log != null && Constants.STATUS_COMPLETED.equals(log.status)) {
-                total += Math.max(0, Math.round(log.totalHours * 60.0));
+                total = Math.addExact(total, completedLogMinutes(log));
             }
         }
         return total;
@@ -35,10 +35,18 @@ public final class AttendanceSummaryCalculator {
         }
         for (WorkLog log : logs) {
             if (log != null && Constants.STATUS_COMPLETED.equals(log.status)) {
-                long minutes = Math.max(0, Math.round(log.totalHours * 60.0));
-                total += WorkHourCalculator.overtimeMinutes(minutes);
+                long minutes = completedLogMinutes(log);
+                total = Math.addExact(total, WorkHourCalculator.overtimeMinutes(minutes));
             }
         }
         return total;
+    }
+
+    public static long completedLogMinutes(WorkLog log) {
+        long minutes = WorkHourCalculator.calculateWorkMinutes(
+                java.time.LocalTime.parse(log.checkInTime),
+                java.time.LocalTime.parse(log.checkOutTime));
+        if (minutes <= 0) throw new IllegalArgumentException("Giờ chấm công không hợp lệ");
+        return minutes;
     }
 }

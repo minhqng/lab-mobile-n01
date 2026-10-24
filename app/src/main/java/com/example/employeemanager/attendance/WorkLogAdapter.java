@@ -49,11 +49,12 @@ public class WorkLogAdapter extends RecyclerView.Adapter<WorkLogAdapter.ViewHold
                 : DateTimeUtils.formatTime(log.checkOutTime);
         holder.textWorkTimes.setText(holder.itemView.getContext().getString(
                 R.string.cong_work_times, checkIn, checkOut));
-        long minutes = Math.max(0, Math.round(log.totalHours * 60.0));
+        long minutes = Constants.STATUS_COMPLETED.equals(log.status)
+                ? AttendanceSummaryCalculator.completedLogMinutes(log) : 0;
         long otMinutes = WorkHourCalculator.overtimeMinutes(minutes);
         holder.textWorkHours.setText(holder.itemView.getContext().getString(
                 R.string.cong_work_hours,
-                DateTimeUtils.formatHours(log.totalHours),
+                DateTimeUtils.formatHours(WorkHourCalculator.minutesToHours(minutes)),
                 DateTimeUtils.formatHours(WorkHourCalculator.minutesToHours(otMinutes))));
         holder.textWorkStatus.setText(statusLabel(log.status, holder.itemView));
     }
