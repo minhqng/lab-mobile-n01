@@ -279,7 +279,7 @@ Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để 
 | Lint | **0 lỗi**, 10 cảnh báo phần nền tảng |
 | Kiểm thử bỏ qua | **0** |
 
-Đã kiểm tra CRUD, chuẩn hóa, trùng dữ liệu, tìm kiếm chữ hoa/thường tiếng Việt và ký tự `%`/`_`, kiểm tra quyền trực tiếp ở Service, quyền đọc hồ sơ bản thân, xóa có lịch sử, rollback tạo/xóa hai bảng bằng trigger SQLite, tạo trùng đồng thời và xoay màn hình trong lúc lưu. Kiểm thử giao diện dùng adapter Auth giả trong APK kiểm thử; **chưa kiểm chứng PasswordHasher/session thật hoặc đăng nhập đến màn hình quản trị**. Báo cáo và ảnh thực nghiệm nằm tại [báo cáo kiểm thử nhân viên](plans/reports/kiem-thu-nhan-vien.md).
+Đã kiểm tra CRUD, chuẩn hóa, trùng dữ liệu, tìm kiếm chữ hoa/thường tiếng Việt và ký tự `%`/`_`, kiểm tra quyền trực tiếp ở Service, quyền đọc hồ sơ bản thân, xóa có lịch sử, rollback tạo/xóa hai bảng bằng trigger SQLite, tạo trùng đồng thời và xoay màn hình trong lúc lưu. Kiểm thử giao diện dùng adapter Auth giả trong APK kiểm thử; **chưa kiểm chứng PasswordHasher/session thật hoặc đăng nhập đến màn hình quản trị**.
 
 ## 13. Giới hạn của phiên bản
 
