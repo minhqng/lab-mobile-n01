@@ -223,6 +223,7 @@ Các lệnh sau đã được chạy thật trong quá trình bàn giao nền t�
 | `./gradlew assembleDebug` | Thành công, tạo `app-debug.apk` |
 | `./gradlew testDebugUnitTest` | Thành công, **10/10** bài kiểm thử đạt |
 | `./gradlew connectedDebugAndroidTest` | Thành công trên máy ảo Pixel_8 (Android 15, API 35), **7/7** bài kiểm thử đạt |
+| `./gradlew lintDebug` | Thành công, **0 lỗi** và 10 cảnh báo về phiên bản thư viện, biểu tượng và cấu hình sao lưu |
 | Cài APK và mở `MainActivity` | Ứng dụng mở bình thường, không có lỗi trong bộ nhớ log sự cố |
 
 Nội dung đã kiểm chứng:
@@ -255,7 +256,7 @@ Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để 
 
 Tài liệu yêu cầu đầy đủ nằm tại [docs/DAC_TA_DU_AN.md](docs/DAC_TA_DU_AN.md). Đây là nguồn yêu cầu chính thức về nghiệp vụ, cơ sở dữ liệu, phân quyền, giao diện và tiêu chí nghiệm thu của dự án.
 
-### Quy định Git, commit và Pull Request
+## Quy định nhánh, commit và Pull Request
 
 - Nhánh `main` chứa nền tảng ổn định. Mỗi thành viên tạo nhánh từ `main` theo quy ước:
   - `tinh-nang/nen-tang-dang-nhap` (TV1)
