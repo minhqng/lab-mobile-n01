@@ -63,3 +63,7 @@ Auth giả chỉ tồn tại trong `src/androidTest`; không khẳng định has
 Tìm kiếm lọc trong bộ nhớ cho danh sách nhỏ, không phân trang, không tìm không dấu hay chuẩn hóa Unicode tương đương. Trạng thái ViewModel giữ qua xoay/tạm dừng, không hứa phục hồi kết quả thao tác sau khi hệ điều hành hủy toàn bộ tiến trình; dữ liệu Room đã commit vẫn tồn tại.
 
 Các điểm có thể xung đột khi tích hợp: `AndroidManifest.xml`, `res/values/strings.xml`, `README.md`. Các thay đổi Manifest chỉ đăng ký ba Activity nội bộ; không đổi launcher. Prefix resource là `nv_`. Không sửa `docs/DAC_TA_DU_AN.md`.
+
+## GitHub
+
+Đã push nhánh `tinh-nang/quan-ly-nhan-vien` và mở [PR nháp #2](https://github.com/minhqng/lab-mobile-n01/pull/2), base `main`. Các commit triển khai: `0d2a1b0` (nghiệp vụ), `4cbee7e` (giao diện), `fcc6158` (kiểm thử), `83f4e83` (hướng dẫn và ảnh). Commit bàn giao sau PR chỉ cập nhật trạng thái kế hoạch/nhật ký. Không force push hoặc merge.

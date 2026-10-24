@@ -11,7 +11,7 @@
 2. [x] NV-01/NV-04: giữ Entity; hoàn thiện tìm kiếm; Service, validation, DTO, quyền và giao dịch độc lập. Auth production còn chờ TV1.
 3. [x] NV-02/NV-03: danh sách, form, chi tiết, bất đồng bộ, vòng đời và resource tiếng Việt.
 4. [x] NV-05: 26/26 unit, 40/40 instrumented trên API 30; build thành công; lint 0 lỗi/10 cảnh báo. Rà soát đã sửa và kiểm chứng lỗi kết quả ghi qua xoay màn hình.
-5. [ ] README, báo cáo thực nghiệm, commit, push, PR nháp; không merge.
+5. [x] README, báo cáo thực nghiệm, commit và push nhánh TV2; đã mở [PR nháp #2](https://github.com/minhqng/lab-mobile-n01/pull/2), không merge.
 
 ## Quyết định tích hợp
 
