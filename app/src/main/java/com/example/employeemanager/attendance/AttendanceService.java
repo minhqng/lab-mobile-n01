@@ -1,6 +1,7 @@
 package com.example.employeemanager.attendance;
 
 import android.database.sqlite.SQLiteConstraintException;
+import com.example.employeemanager.data.AppDB;
 
 import com.example.employeemanager.data.dao.SalaryDao;
 import com.example.employeemanager.data.dao.WorkLogDao;
@@ -26,6 +27,12 @@ public class AttendanceService {
     private final SalaryDao salaryDao;
     private final SessionProvider sessionProvider;
     private Clock clock;
+    private AppDB database;
+
+    public AttendanceService(AppDB database, SessionProvider sessionProvider, Clock clock) {
+        this(database.workLogDao(), database.salaryDao(), sessionProvider, clock);
+        this.database = database;
+    }
 
     public AttendanceService(WorkLogDao workLogDao) {
         this(workLogDao, null, null, DateTimeUtils.systemClock());
@@ -59,13 +66,17 @@ public class AttendanceService {
     }
 
     public WorkLog checkIn() {
+        if (database != null) {
+            return database.runInTransaction(() -> checkIn(requireEmployeeId()));
+        }
         return checkIn(requireEmployeeId());
     }
 
     WorkLog checkIn(long employeeId) {
         validateEmployeeId(employeeId);
-        LocalDate today = DateTimeUtils.today(clock);
-        String todayKey = DateTimeUtils.todayString(clock);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now(DateTimeUtils.withZone(clock));
+        LocalDate today = now.toLocalDate();
+        String todayKey = today.toString();
         if (isSalaryPaid(employeeId, today.getMonthValue(), today.getYear())) {
             throw new AttendanceException("Tháng này đã chốt lương, không thể chấm công");
         }
@@ -80,7 +91,7 @@ public class AttendanceService {
             throw new AttendanceException("Bạn đã chấm công vào hôm nay");
         }
 
-        String checkInTime = DateTimeUtils.nowTimeString(clock);
+        String checkInTime = now.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern(Constants.TIME_STORAGE_PATTERN));
         WorkLog workLog = new WorkLog(
                 employeeId, todayKey, checkInTime, null, 0.0, Constants.STATUS_OPEN);
 
@@ -97,13 +108,17 @@ public class AttendanceService {
     }
 
     public WorkLog checkOut() {
+        if (database != null) {
+            return database.runInTransaction(() -> checkOut(requireEmployeeId()));
+        }
         return checkOut(requireEmployeeId());
     }
 
     WorkLog checkOut(long employeeId) {
         validateEmployeeId(employeeId);
-        LocalDate today = DateTimeUtils.today(clock);
-        String todayKey = DateTimeUtils.todayString(clock);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now(DateTimeUtils.withZone(clock));
+        LocalDate today = now.toLocalDate();
+        String todayKey = today.toString();
 
         WorkLog todayLog = workLogDao.findByEmployeeAndDate(employeeId, todayKey);
         if (todayLog == null) {
@@ -128,14 +143,14 @@ public class AttendanceService {
         }
 
         LocalTime checkInTime = DateTimeUtils.parseTime(todayLog.checkInTime);
-        LocalTime checkOutNow = DateTimeUtils.nowTime(clock);
+        LocalTime checkOutNow = now.toLocalTime().withNano(0);
         long workedMinutes = WorkHourCalculator.calculateWorkMinutes(checkInTime, checkOutNow);
 
         if (workedMinutes <= 0) {
             throw new AttendanceException("Giờ chấm công ra phải sau giờ vào");
         }
 
-        String checkOutTime = DateTimeUtils.nowTimeString(clock);
+        String checkOutTime = checkOutNow.format(java.time.format.DateTimeFormatter.ofPattern(Constants.TIME_STORAGE_PATTERN));
         double totalHours = WorkHourCalculator.minutesToHours(workedMinutes);
 
         int updatedRows;
@@ -175,6 +190,9 @@ public class AttendanceService {
     }
 
     public List<WorkLog> getCompletedLogsByMonth(long employeeId, int month, int year) {
+        if (requireEmployeeId() != employeeId) {
+            throw new SecurityException("Bạn không có quyền xem thông tin này");
+        }
         validateEmployeeId(employeeId);
         validateMonthYear(month, year);
         return workLogDao.findCompletedByEmployeeAndMonth(

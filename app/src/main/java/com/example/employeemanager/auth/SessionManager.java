@@ -115,7 +115,9 @@ public class SessionManager {
 
         // Đối chiếu trực tiếp với Room để bảo vệ an toàn phân quyền
         Account account = accountDao.findById(savedAccountId);
-        if (account == null || !savedRole.equals(account.role)) {
+        if (account == null || !savedRole.equals(account.role)
+                || (!Constants.ROLE_ADMIN.equals(account.role)
+                && !Constants.ROLE_EMPLOYEE.equals(account.role))) {
             // Dữ liệu trong DB không khớp với phiên SharedPreferences (đã bị xóa hoặc đổi role)
             logout();
             return null;

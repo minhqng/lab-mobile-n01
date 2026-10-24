@@ -54,6 +54,9 @@ public final class DataInitializer {
             AccountDao accountDao = appDb.accountDao();
             EmployeeDao employeeDao = appDb.employeeDao();
 
+            // Chỉ seed cơ sở dữ liệu mới; không tái tạo nhân viên đã được xóa hợp lệ.
+            if (accountDao.count() != 0) return;
+
             // 1. Khởi tạo tài khoản Quản trị viên nếu chưa có
             Account existingAdmin = accountDao.findByUsername(DEMO_ADMIN_USERNAME);
             if (existingAdmin == null) {
