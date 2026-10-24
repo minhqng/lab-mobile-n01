@@ -2,6 +2,7 @@ package com.example.employeemanager.salary;
 
 import com.example.employeemanager.data.AppDB;
 import com.example.employeemanager.data.dto.SalaryBreakdown;
+import com.example.employeemanager.data.dto.SalaryDetailDto;
 import com.example.employeemanager.data.entities.Employee;
 import com.example.employeemanager.data.entities.Salary;
 import com.example.employeemanager.data.entities.WorkLog;
@@ -196,6 +197,38 @@ public class SalaryService {
             appDb.salaryDao().update(salary);
             return salary;
         });
+    }
+
+    /**
+     * Lấy danh sách nhân viên phục vụ quản lý và tính lương.
+     *
+     * <p>Chỉ dành cho quản trị viên (ADMIN).</p>
+     *
+     * @return danh sách toàn bộ nhân viên trong hệ thống.
+     * @throws SecurityException nếu người dùng không có quyền quản trị.
+     */
+    public List<Employee> getEmployeesForSalaryManagement() {
+        authorization.requireAdmin();
+        return appDb.employeeDao().getAll();
+    }
+
+    /**
+     * Lấy chi tiết bảng lương kèm thông tin nhân viên tương ứng.
+     *
+     * <p>Chỉ dành cho quản trị viên (ADMIN).</p>
+     *
+     * @param salaryId ID của bảng lương.
+     * @return đối tượng {@link SalaryDetailDto} hoặc {@code null} nếu không tìm thấy bảng lương.
+     * @throws SecurityException nếu người dùng không có quyền quản trị.
+     */
+    public SalaryDetailDto getSalaryDetail(long salaryId) {
+        authorization.requireAdmin();
+        Salary salary = appDb.salaryDao().findById(salaryId);
+        if (salary == null) {
+            return null;
+        }
+        Employee employee = appDb.employeeDao().findById(salary.employeeId);
+        return new SalaryDetailDto(salary, employee);
     }
 
     /**

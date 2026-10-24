@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.employeemanager.R;
-import com.example.employeemanager.data.AppDB;
 import com.example.employeemanager.data.entities.Employee;
 import com.example.employeemanager.data.entities.Salary;
 import com.example.employeemanager.util.AppExecutors;
@@ -33,8 +32,8 @@ import java.util.Map;
 /**
  * Màn hình danh sách bảng lương dành cho quản trị viên (ADMIN).
  *
- * <p>Cho phép chọn kỳ lương (tháng/năm), chọn nhân viên để tạo/tính lại bảng lương DRAFT,
- * xem danh sách các bảng lương hiện có trong tháng và mở màn hình chi tiết.</p>
+ * <p>Kiến trúc tuân thủ nghiêm ngặt Activity → Service. Mọi thao tác đọc dữ liệu nhân viên
+ * và bảng lương đều thông qua {@link SalaryService} có kiểm tra phân quyền, không gọi trực tiếp DAO.</p>
  */
 public class SalaryListActivity extends AppCompatActivity {
 
@@ -49,7 +48,6 @@ public class SalaryListActivity extends AppCompatActivity {
 
     private SalaryAdapter salaryAdapter;
     private SalaryService salaryService;
-    private AppDB appDb;
 
     private final List<Employee> employeeList = new ArrayList<>();
     private final Map<Long, Employee> employeeMap = new HashMap<>();
@@ -88,7 +86,6 @@ public class SalaryListActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        appDb = AppDB.getInstance(this);
         salaryService = SalaryServiceFactory.createService(this);
 
         LocalDate now = LocalDate.now(ZoneId.of(Constants.TIME_ZONE_ID));
@@ -97,10 +94,10 @@ public class SalaryListActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        // Cấu hình Spinner Tháng (1 - 12)
+        // Cấu hình Spinner Tháng (1 - 12) dùng định dạng resource
         List<String> months = new ArrayList<>();
         for (int m = 1; m <= 12; m++) {
-            months.add("Tháng " + m);
+            months.add(getString(R.string.luong_format_month, m));
         }
         ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, months);
@@ -167,15 +164,21 @@ public class SalaryListActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             try {
-                List<Employee> employees = appDb.employeeDao().getAll();
+                // Tải danh sách nhân viên qua Service có kiểm tra quyền ADMIN
+                List<Employee> employees = salaryService.getEmployeesForSalaryManagement();
                 AppExecutors.runOnMainThread(() -> {
                     updateEmployeeSpinner(employees);
                     loadSalariesForCurrentPeriod();
                 });
+            } catch (SecurityException e) {
+                AppExecutors.runOnMainThread(() -> {
+                    setOperatingState(false);
+                    showToast(getString(R.string.luong_error_permission_denied));
+                });
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_prefix) + e.getMessage());
+                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
                 });
             }
         });
@@ -190,7 +193,7 @@ public class SalaryListActivity extends AppCompatActivity {
             employeeList.addAll(employees);
             for (Employee e : employees) {
                 employeeMap.put(e.id, e);
-                displayList.add(e.code + " - " + e.fullname);
+                displayList.add(getString(R.string.luong_format_employee_display, e.code, e.fullname));
             }
         } else {
             displayList.add(getString(R.string.luong_empty_employee));
@@ -212,6 +215,7 @@ public class SalaryListActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             try {
+                // Tải danh sách bảng lương qua Service có kiểm tra quyền ADMIN
                 List<Salary> salaries = salaryService.getSalariesByMonth(month, year);
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
@@ -227,7 +231,7 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_prefix) + e.getMessage());
+                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
                 });
             }
         });
@@ -253,6 +257,7 @@ public class SalaryListActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             try {
+                // Tính lương qua Service có kiểm tra quyền ADMIN
                 salaryService.generateMonthlySalary(selectedEmployee.id, month, year);
                 AppExecutors.runOnMainThread(() -> {
                     showToast(getString(R.string.luong_msg_calculate_success));
@@ -271,7 +276,7 @@ public class SalaryListActivity extends AppCompatActivity {
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_generic) + ": " + e.getMessage());
+                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_generic), e.getMessage()));
                 });
             }
         });

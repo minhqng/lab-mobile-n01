@@ -29,6 +29,13 @@ public final class SalaryServiceFactory {
     }
 
     /**
+     * Đặt lại cơ chế kiểm tra phân quyền về mặc định.
+     */
+    public static void resetAuthorization() {
+        customAuthorization = null;
+    }
+
+    /**
      * Tạo thể hiện {@link SalaryService} sử dụng cơ sở dữ liệu và bộ phân quyền tương ứng.
      *
      * @param context Context ứng dụng Android.

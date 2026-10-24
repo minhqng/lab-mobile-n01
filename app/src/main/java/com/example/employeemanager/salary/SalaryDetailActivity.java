@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.employeemanager.R;
-import com.example.employeemanager.data.AppDB;
+import com.example.employeemanager.data.dto.SalaryDetailDto;
 import com.example.employeemanager.data.entities.Employee;
 import com.example.employeemanager.data.entities.Salary;
 import com.example.employeemanager.util.AppExecutors;
@@ -25,8 +25,8 @@ import java.util.Locale;
 /**
  * Màn hình chi tiết bảng lương dành cho quản trị viên (ADMIN).
  *
- * <p>Hiển thị chi tiết giờ làm, giờ tăng ca, tổng lương và trạng thái của một kỳ lương.
- * Cho phép quản trị viên xác nhận chốt thanh toán (chuyển trạng thái sang PAID) có xác nhận.</p>
+ * <p>Kiến trúc tuân thủ nghiêm ngặt Activity → Service. Mọi thao tác đọc dữ liệu và chốt thanh toán
+ * đều thông qua {@link SalaryService} có kiểm tra phân quyền, không gọi trực tiếp DAO.</p>
  */
 public class SalaryDetailActivity extends AppCompatActivity {
 
@@ -44,7 +44,6 @@ public class SalaryDetailActivity extends AppCompatActivity {
     private Button btnConfirmPaid;
 
     private SalaryService salaryService;
-    private AppDB appDb;
 
     private long salaryId = -1L;
     private Salary currentSalary;
@@ -88,7 +87,6 @@ public class SalaryDetailActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        appDb = AppDB.getInstance(this);
         salaryService = SalaryServiceFactory.createService(this);
     }
 
@@ -104,8 +102,9 @@ public class SalaryDetailActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             try {
-                Salary salary = appDb.salaryDao().findById(salaryId);
-                if (salary == null) {
+                // Tải chi tiết bảng lương qua Service có kiểm tra quyền ADMIN
+                SalaryDetailDto detail = salaryService.getSalaryDetail(salaryId);
+                if (detail == null || detail.getSalary() == null) {
                     AppExecutors.runOnMainThread(() -> {
                         setOperatingState(false);
                         showToast(getString(R.string.luong_error_not_found));
@@ -114,16 +113,21 @@ public class SalaryDetailActivity extends AppCompatActivity {
                     return;
                 }
 
-                Employee employee = appDb.employeeDao().findById(salary.employeeId);
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    currentSalary = salary;
-                    displaySalaryInfo(salary, employee);
+                    currentSalary = detail.getSalary();
+                    displaySalaryInfo(detail.getSalary(), detail.getEmployee());
+                });
+            } catch (SecurityException e) {
+                AppExecutors.runOnMainThread(() -> {
+                    setOperatingState(false);
+                    showToast(getString(R.string.luong_error_permission_denied));
+                    finish();
                 });
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_prefix) + e.getMessage());
+                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_prefix), e.getMessage()));
                 });
             }
         });
@@ -135,19 +139,19 @@ public class SalaryDetailActivity extends AppCompatActivity {
             tvDetailEmployeeName.setText(employee.fullname);
         } else {
             tvDetailEmployeeCode.setText("—");
-            tvDetailEmployeeName.setText("Nhân viên #" + salary.employeeId);
+            tvDetailEmployeeName.setText(getString(R.string.luong_fallback_employee, salary.employeeId));
         }
 
-        tvDetailPeriod.setText(String.format(Locale.ROOT, "Tháng %02d/%d", salary.month, salary.year));
+        tvDetailPeriod.setText(getString(R.string.luong_format_period, salary.month, salary.year));
 
-        String totalHoursStr = String.format(Locale.ROOT, "%.2f %s", salary.totalHours, getString(R.string.luong_unit_hours));
+        String totalHoursStr = getString(R.string.luong_format_hours, salary.totalHours, getString(R.string.luong_unit_hours));
         tvDetailTotalHours.setText(totalHoursStr);
 
-        String overtimeHoursStr = String.format(Locale.ROOT, "%.2f %s", salary.overtimeHours, getString(R.string.luong_unit_hours));
+        String overtimeHoursStr = getString(R.string.luong_format_hours, salary.overtimeHours, getString(R.string.luong_unit_hours));
         tvDetailOvertimeHours.setText(overtimeHoursStr);
 
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
-        String salaryStr = formatter.format(salary.totalSalary) + " " + getString(R.string.luong_unit_currency);
+        String salaryStr = getString(R.string.luong_format_currency, formatter.format(salary.totalSalary), getString(R.string.luong_unit_currency));
         tvDetailTotalSalary.setText(salaryStr);
 
         if (Constants.STATUS_PAID.equals(salary.status)) {
@@ -182,7 +186,8 @@ public class SalaryDetailActivity extends AppCompatActivity {
 
         AppExecutors.databaseExecutor().execute(() -> {
             try {
-                Salary updated = salaryService.confirmSalaryPaid(salaryId);
+                // Chốt thanh toán qua Service có kiểm tra quyền ADMIN
+                salaryService.confirmSalaryPaid(salaryId);
                 AppExecutors.runOnMainThread(() -> {
                     showToast(getString(R.string.luong_msg_paid_success));
                     loadSalaryDetails();
@@ -200,7 +205,7 @@ public class SalaryDetailActivity extends AppCompatActivity {
             } catch (Exception e) {
                 AppExecutors.runOnMainThread(() -> {
                     setOperatingState(false);
-                    showToast(getString(R.string.luong_error_generic) + ": " + e.getMessage());
+                    showToast(getString(R.string.luong_format_error_detail, getString(R.string.luong_error_generic), e.getMessage()));
                 });
             }
         });

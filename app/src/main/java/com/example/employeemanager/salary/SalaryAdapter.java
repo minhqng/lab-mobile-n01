@@ -1,5 +1,6 @@
 package com.example.employeemanager.salary;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,30 +82,32 @@ public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.SalaryView
         }
 
         void bind(Salary salary, Employee employee, OnSalaryClickListener listener) {
+            Context context = itemView.getContext();
+
             String employeeDisplay;
             if (employee != null) {
-                employeeDisplay = employee.code + " - " + employee.fullname;
+                employeeDisplay = context.getString(R.string.luong_format_employee_display, employee.code, employee.fullname);
             } else {
-                employeeDisplay = "NV #" + salary.employeeId;
+                employeeDisplay = context.getString(R.string.luong_fallback_employee_short, salary.employeeId);
             }
             tvEmployeeName.setText(employeeDisplay);
 
-            String hoursText = String.format(Locale.ROOT, "Tổng: %.2fh (Tăng ca: %.2fh)",
-                    salary.totalHours, salary.overtimeHours);
+            String hoursText = context.getString(R.string.luong_format_work_hours, salary.totalHours, salary.overtimeHours);
             tvWorkHours.setText(hoursText);
 
             NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
-            String salaryText = numberFormat.format(salary.totalSalary) + " đ";
+            String salaryText = context.getString(R.string.luong_format_currency,
+                    numberFormat.format(salary.totalSalary), context.getString(R.string.luong_unit_currency));
             tvTotalSalary.setText(salaryText);
 
             if (Constants.STATUS_PAID.equals(salary.status)) {
                 tvStatus.setText(R.string.luong_status_paid);
                 tvStatus.setBackgroundResource(R.drawable.bg_status_paid);
-                tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), android.R.color.holo_green_dark));
+                tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
             } else {
                 tvStatus.setText(R.string.luong_status_draft);
                 tvStatus.setBackgroundResource(R.drawable.bg_status_draft);
-                tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), android.R.color.holo_orange_dark));
+                tvStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark));
             }
 
             itemView.setOnClickListener(v -> {

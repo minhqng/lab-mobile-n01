@@ -204,6 +204,34 @@ public class SalaryServiceAndroidTest {
         assertThrows(SecurityException.class, () ->
                 nonAdminService.confirmSalaryPaid(1L)
         );
+
+        assertThrows(SecurityException.class, () ->
+                nonAdminService.getEmployeesForSalaryManagement()
+        );
+
+        assertThrows(SecurityException.class, () ->
+                nonAdminService.getSalaryDetail(1L)
+        );
+    }
+
+    @Test
+    public void testGetEmployeesForSalaryManagement_AllowedForAdmin() {
+        List<Employee> employees = salaryService.getEmployeesForSalaryManagement();
+        assertNotNull(employees);
+        assertEquals(1, employees.size());
+        assertEquals("NV001", employees.get(0).code);
+    }
+
+    @Test
+    public void testGetSalaryDetail_AllowedForAdmin() {
+        Salary salary = salaryService.generateMonthlySalary(employeeId, 9, 2026);
+        com.example.employeemanager.data.dto.SalaryDetailDto detail = salaryService.getSalaryDetail(salary.id);
+
+        assertNotNull(detail);
+        assertNotNull(detail.getSalary());
+        assertNotNull(detail.getEmployee());
+        assertEquals(salary.id, detail.getSalary().id);
+        assertEquals("NV001", detail.getEmployee().code);
     }
 
     @Test

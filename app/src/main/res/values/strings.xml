@@ -44,4 +44,15 @@
     <string name="luong_msg_paid_success">Đã xác nhận thanh toán bảng lương thành công.</string>
     <string name="luong_error_permission_denied">Bạn không có quyền quản trị để thực hiện thao tác này.</string>
     <string name="luong_error_generic">Đã xảy ra lỗi, vui lòng thử lại sau.</string>
+
+    <!-- Các chuỗi định dạng động cho Module Quản lý lương -->
+    <string name="luong_format_month">Tháng %d</string>
+    <string name="luong_format_work_hours">Tổng: %1$.2f giờ (Tăng ca: %2$.2f giờ)</string>
+    <string name="luong_format_hours">%1$.2f %2$s</string>
+    <string name="luong_fallback_employee">Nhân viên #%d</string>
+    <string name="luong_fallback_employee_short">NV #%d</string>
+    <string name="luong_format_employee_display">%1$s - %2$s</string>
+    <string name="luong_format_period">Tháng %1$02d/%2$d</string>
+    <string name="luong_format_currency">%1$s %2$s</string>
+    <string name="luong_format_error_detail">%1$s: %2$s</string>
 </resources>
