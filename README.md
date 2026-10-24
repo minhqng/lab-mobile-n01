@@ -8,7 +8,7 @@
 
 Ứng dụng giúp quản trị viên quản lý nhân viên, theo dõi công và bảng lương; giúp nhân viên tự chấm công, xem lịch sử làm việc và tiền lương của chính mình. Ứng dụng hoạt động hoàn toàn ngoại tuyến trên một thiết bị, dữ liệu được lưu cục bộ bằng Room/SQLite, không có máy chủ và không đồng bộ giữa nhiều điện thoại.
 
-Phiên bản hiện tại đã hoàn thành **nền tảng kỹ thuật (NEN-01)** cùng **mô-đun đăng nhập và phân quyền hai vai trò (DN-01, DN-02, DN-03, DN-04)**: hệ thống xác thực mật khẩu băm bảo mật PBKDF2, quản lý phiên đăng nhập qua SharedPreferences có đối chiếu Room, khởi tạo tài khoản mẫu và giao diện đăng nhập điều phối theo vai trò.
+Module nhân viên đã được tích hợp cùng đăng nhập; adapter production đang được nối trong chặng tiếp theo. Phiên bản hiện tại đã hoàn thành **nền tảng kỹ thuật (NEN-01)** cùng **mô-đun đăng nhập và phân quyền hai vai trò (DN-01, DN-02, DN-03, DN-04)**: hệ thống xác thực mật khẩu băm bảo mật PBKDF2, quản lý phiên đăng nhập qua SharedPreferences có đối chiếu Room, khởi tạo tài khoản mẫu và giao diện đăng nhập điều phối theo vai trò.
 
 ## 3. Tính năng chính
 
@@ -186,6 +186,22 @@ JAVA_HOME=/opt/android-studio/jbr ./gradlew lintDebug
 
 APK debug được tạo tại `app/build/outputs/apk/debug/app-debug.apk`.
 
+### 7.1. Tích hợp module nhân viên với TV1
+
+TV1 triển khai `employee.EmployeeAuth` và gọi `EmployeeModule.configure(adapter)` một lần trong `Application.onCreate()` trước khi mở màn hình nhân viên:
+
+- `long currentAccountId()`: lấy ID từ phiên đã xác thực; trả `0` khi không có phiên. Không nhận ID/role từ Intent và không cache role riêng. Service vẫn đọc lại Account trong Room trước khi cấp quyền.
+- `String hashPassword(String plainPassword)`: gọi `PasswordHasher` thật của TV1, trả chuỗi băm chậm có salt theo đặc tả; báo lỗi nếu bộ băm chưa sẵn sàng. Không lưu hoặc ghi nhật ký mật khẩu nhập. Các callback này được gọi trên luồng nền.
+- Mặc định chưa cấu hình: ID phiên bằng `0`, từ chối mọi truy cập; bộ băm mặc định báo chức năng chưa sẵn sàng. Không có SharedPreferences, tài khoản Admin hay thuật toán băm thay thế trong module TV2.
+
+Sau khi nối Auth, màn hình quản trị mở `EmployeeListActivity` bằng Intent nội bộ. Từ danh sách chọn thêm mới hoặc mở chi tiết để sửa/xóa. Các màn hình dùng khóa Intent `EmployeeActivity.EXTRA_EMPLOYEE_ID`; không chuyển Account/password/hash qua Intent. Tất cả Activity TV2 đặt `exported="false"` và kiểm tra quyền lại khi quay về màn hình.
+
+API Service giữ sáu phương thức tại mục 10.2 đặc tả. `CreateEmployeeRequest` nhận `code, fullname, email, phone, hourlyRate, username, password`; `UpdateEmployeeRequest` nhận năm trường đầu. `hourlyRate` trong request là chuỗi để kiểm tra input trước khi chuyển sang `long` trong Entity. Kết quả đọc không tồn tại báo `EmployeeException`; UI ánh xạ `messageRes` và `field` sang lỗi tiếng Việt. Các hàm Service chạy đồng bộ trên worker.
+
+Tìm kiếm trim từ khóa, đổi chữ thường bằng `Locale.ROOT`, lọc chuỗi con trên danh sách DAO đã sắp tên/mã. Hỗ trợ hoa/thường tiếng Việt, giữ nguyên dấu, coi `%` và `_` là ký tự thường; không tìm không dấu hoặc chuẩn hóa các cách mã hóa Unicode tương đương. Giải pháp lọc trong bộ nhớ phù hợp danh sách nhỏ của bài thực hành, chưa phân trang cho dữ liệu lớn.
+
+Chạy riêng kiểm thử màn hình trên máy ảo bằng `gradlew.bat connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.employeemanager.employee.EmployeeUiTest`. Auth/bộ băm giả chỉ nằm trong APK kiểm thử; dữ liệu kiểm thử có tiền tố `TV2-UI-`, được dọn sau mỗi bài. Ảnh giao diện do bài kiểm thử vẽ từ View thật được lưu trong thư mục `files/` nội bộ của ứng dụng với tên `nv-danh-sach.png`, `nv-bieu-mau.png`, `nv-chi-tiet.png`. Khi chạy Gradle, runner có thể gỡ APK và xóa ảnh sau kiểm thử; muốn lấy ảnh, cài hai APK rồi chạy `adb shell am instrument -w -e class com.example.employeemanager.employee.EmployeeUiTest com.example.employeemanager.test/androidx.test.runner.AndroidJUnitRunner` và đọc tệp qua `adb exec-out run-as com.example.employeemanager cat files/<tên-ảnh>.png`. Lưu stdout theo dạng nhị phân. Đây không phải bằng chứng đăng nhập tích hợp thật.
+
 ## 8. Tài khoản dùng thử
 
 Khi ứng dụng khởi động lần đầu, tiện ích `DataInitializer` sẽ tự động tạo một tài khoản Quản trị viên và một tài khoản Nhân viên mẫu trong một Room transaction. Mọi mật khẩu được băm bằng `PasswordHasher` trước khi lưu vào Room, tuyệt đối không lưu mật khẩu rõ trong cơ sở dữ liệu hay SharedPreferences.
@@ -312,6 +328,20 @@ Phần chưa kiểm chứng:
 - Bài kiểm thử `AuthInstrumentedTest` và `AppDatabaseTest` trong `src/androidTest/` đã được viết hoàn chỉnh nhưng chưa chạy trên thiết bị vật lý do môi trường hiện tại là máy chủ dòng lệnh headless không có KVM ảo hóa phần cứng cho emulator.
 
 Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để che giấu lỗi.
+
+### 12.1. Kết quả module nhân viên TV2 — 24/10/2026
+
+Đã chạy `gradlew.bat clean assembleDebug testDebugUnitTest lintDebug`, sau đó chạy lại `gradlew.bat assembleDebug testDebugUnitTest lintDebug connectedDebugAndroidTest` trên bản mã cuối:
+
+| Kiểm tra | Kết quả thực tế |
+|---|---|
+| APK debug và Room annotation processor | Thành công; schema `1.json` giữ nguyên |
+| Kiểm thử đơn vị | **26/26** đạt: 10 nền tảng + 16 validation nhân viên |
+| Kiểm thử trên Pixel_4 Android 11, API 30 | **40/40** đạt: 7 nền tảng + 25 Service/Room + 8 giao diện |
+| Lint | **0 lỗi**, 10 cảnh báo phần nền tảng |
+| Kiểm thử bỏ qua | **0** |
+
+Đã kiểm tra CRUD, chuẩn hóa, trùng dữ liệu, tìm kiếm chữ hoa/thường tiếng Việt và ký tự `%`/`_`, kiểm tra quyền trực tiếp ở Service, quyền đọc hồ sơ bản thân, xóa có lịch sử, rollback tạo/xóa hai bảng bằng trigger SQLite, tạo trùng đồng thời và xoay màn hình trong lúc lưu. Kiểm thử giao diện dùng adapter Auth giả trong APK kiểm thử; **chưa kiểm chứng PasswordHasher/session thật hoặc đăng nhập đến màn hình quản trị**.
 
 ## 13. Giới hạn của phiên bản
 

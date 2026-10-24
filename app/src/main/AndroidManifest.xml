@@ -9,6 +9,10 @@
         android:supportsRtl="false"
         android:theme="@style/Theme.EmployeeManager">
 
+        <activity android:name=".employee.EmployeeListActivity" android:exported="false" />
+        <activity android:name=".employee.EmployeeFormActivity" android:exported="false" />
+        <activity android:name=".employee.EmployeeDetailActivity" android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
