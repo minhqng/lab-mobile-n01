@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:id="@+id/nv_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_back" />
+        <TextView
+            android:id="@+id/nv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_chi_tiet"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingVertical="12dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_ma_nhan_vien"
+            android:paddingTop="12dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/nv_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textIsSelectable="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_ho_ten"
+            android:paddingTop="12dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/nv_fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textIsSelectable="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_email"
+            android:paddingTop="12dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/nv_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textIsSelectable="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_so_dien_thoai"
+            android:paddingTop="12dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/nv_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textIsSelectable="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_don_gia_gio"
+            android:paddingTop="12dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/nv_hourly_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textIsSelectable="true" />
+        <ProgressBar
+            android:id="@+id/nv_loading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/nv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_dang_tai"
+            android:textSize="16sp"
+            android:accessibilityLiveRegion="polite"
+            android:paddingVertical="8dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/nv_thu_lai" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_chinh_sua" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_xoa" />
+    </LinearLayout>
+</ScrollView>

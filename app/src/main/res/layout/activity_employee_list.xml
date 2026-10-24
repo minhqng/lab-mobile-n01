@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nv_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nv_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nv_back" />
+    <TextView
+        android:id="@+id/nv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nv_danh_sach"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingVertical="12dp"/>
+    <EditText
+        android:id="@+id/nv_keyword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:inputType="text"
+        android:autofillHints=""
+        android:hint="@string/nv_tim_kiem" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nv_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nv_them_moi" />
+    <ProgressBar
+        android:id="@+id/nv_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone" />
+    <TextView
+        android:id="@+id/nv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nv_dang_tai"
+        android:textSize="16sp"
+        android:accessibilityLiveRegion="polite"
+        android:paddingVertical="8dp"/>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nv_retry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/nv_thu_lai" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/nv_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>
