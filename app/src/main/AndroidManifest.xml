@@ -18,6 +18,19 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".auth.AdminPlaceholderActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.EmployeePlaceholderActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

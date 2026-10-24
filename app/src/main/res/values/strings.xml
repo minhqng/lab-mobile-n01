@@ -2,10 +2,43 @@
 <resources>
     <string name="app_name">Quản lý lương nhân viên</string>
 
-    <!-- Màn hình khởi động tối thiểu của giai đoạn nền tảng. -->
+    <!-- Màn hình khởi động và điều phối phiên -->
     <string name="main_title">Quản lý thời gian làm việc và tiền lương</string>
     <string name="main_subtitle">Ứng dụng ngoại tuyến dành cho quản trị viên và nhân viên.</string>
+    <string name="main_checking_session">Đang kiểm tra phiên đăng nhập...</string>
     <string name="main_foundation_ready">Nền tảng ứng dụng đã được khởi tạo</string>
     <string name="main_next_step">Các mô-đun đăng nhập, nhân viên, chấm công, tính lương và báo cáo sẽ được triển khai ở các giai đoạn tiếp theo.</string>
     <string name="main_foundation_version">Phiên bản nền tảng: 1.0</string>
+
+    <!-- Module Đăng nhập và Phân quyền (prefix auth_) -->
+    <string name="auth_login_title">Đăng nhập hệ thống</string>
+    <string name="auth_login_subtitle">Quản lý thời gian làm việc và tiền lương</string>
+    <string name="auth_username_label">Tên đăng nhập</string>
+    <string name="auth_username_hint">Nhập tên đăng nhập (ví dụ: admin, nv001)</string>
+    <string name="auth_password_label">Mật khẩu</string>
+    <string name="auth_password_hint">Nhập mật khẩu</string>
+    <string name="auth_btn_login">Đăng nhập</string>
+    <string name="auth_logging_in">Đang xác thực, vui lòng chờ...</string>
+    <string name="auth_error_empty_username">Vui lòng nhập tên đăng nhập</string>
+    <string name="auth_error_empty_password">Vui lòng nhập mật khẩu</string>
+    <string name="auth_error_empty_fields">Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu</string>
+    <string name="auth_logout_button">Đăng xuất</string>
+
+    <!-- Màn hình tạm thời cho vai trò Quản trị viên (ADMIN) -->
+    <string name="auth_admin_placeholder_title">Bảng điều khiển Quản trị viên</string>
+    <string name="auth_admin_placeholder_badge">QUẢN TRỊ VIÊN (ADMIN)</string>
+    <string name="auth_admin_placeholder_desc">Đây là màn hình điều phối tạm thời cho vai trò Quản trị viên. Khi module Quản lý nhân viên (TV2), Tính lương (TV4) và Báo cáo (TV5) được tích hợp, hệ thống sẽ tự động chuyển hướng đến Dashboard chính thức.</string>
+
+    <!-- Màn hình tạm thời cho vai trò Nhân viên (EMPLOYEE) -->
+    <string name="auth_employee_placeholder_title">Bảng làm việc Nhân viên</string>
+    <string name="auth_employee_placeholder_badge">NHÂN VIÊN (EMPLOYEE)</string>
+    <string name="auth_employee_placeholder_desc">Đây là màn hình điều phối tạm thời cho vai trò Nhân viên. Khi module Chấm công (TV3) và Lương cá nhân (TV5) được tích hợp, hệ thống sẽ tự động chuyển hướng đến Trang nhân viên chính thức.</string>
+
+    <!-- Nhãn thông tin người dùng -->
+    <string name="auth_user_info_title">Thông tin phiên hiện tại</string>
+    <string name="auth_account_id_label">Mã tài khoản (Account ID): %1$d</string>
+    <string name="auth_username_display_label">Tên tài khoản: %1$s</string>
+    <string name="auth_role_display_label">Vai trò hệ thống: %1$s</string>
+    <string name="auth_employee_id_display_label">Mã nhân viên (Employee ID): %1$d</string>
+    <string name="auth_demo_credentials_hint">Tài khoản dùng thử demo:\n• Quản trị viên: admin / QuanLy@2026!\n• Nhân viên: nv001 / NhanVien@2026!</string>
 </resources>
