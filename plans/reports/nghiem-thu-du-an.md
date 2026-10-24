@@ -72,10 +72,22 @@ Bằng chứng máy tạo nằm tại `app/build/test-results/testDebugUnitTest/
 - Hành vi phiên do [`SessionManager.java`](../../app/src/main/java/com/example/employeemanager/auth/SessionManager.java) sở hữu; seed và chính sách không tái tạo nhân viên đã xóa do [`DataInitializer.java`](../../app/src/main/java/com/example/employeemanager/data/DataInitializer.java) sở hữu.
 - Quy tắc `DRAFT`/`PAID`, kiểm tra kỳ đã kết thúc và chặn `OPEN` do [`SalaryService.java`](../../app/src/main/java/com/example/employeemanager/salary/SalaryService.java) sở hữu; báo cáo và dashboard do gói `reports` sở hữu.
 - Bốn Entity và schema version 1 không khác origin/main. Giữ đúng Account, Employee, WorkLog, Salary; các query/DTO mới không thêm bảng.
-- PR GitHub cuối và review phê duyệt chưa được tạo; việc xuất bản hoặc hợp nhất không thuộc báo cáo này.
+- [PR #5](https://github.com/minhqng/lab-mobile-n01/pull/5) đã sẵn sàng review, nhánh đã push; đã mời minhqng. PR gốc #1–#4 còn mở riêng, toàn bộ commit gốc đã nằm trong nhánh tích hợp.
 
 ## Kiểm tra tiến trình và dữ liệu bền vững
 
 Cài APK cuối lên Pixel_4, đăng nhập ADMIN bằng giao diện thật, sửa số điện thoại của NV001 thành dữ liệu mẫu khác. Thực hiện adb shell am force-stop com.example.employeemanager rồi mở MainActivity: ứng dụng vào thẳng dashboard ADMIN, danh sách/chi tiết nhân viên vẫn chứa đúng số mới. Sau đó sửa lại số demo ban đầu và đăng xuất. Đây là một kiểm tra bổ sung qua ADB, không cộng vào 141 bài JVM/Android đã đếm.
 
 Không còn lỗi chức năng đã biết trong phạm vi kiểm tra này. Giới hạn còn lại: thiết bị vật lý chưa chạy; Git chưa có đóng góp riêng của TV5, phần báo cáo do phiên tích hợp bổ sung; main còn chờ thành viên khác review đúng quy trình.
+
+## Bản clone sạch và mã đã kiểm chứng
+
+Đã clone cục bộ bằng git clone --local --no-hardlinks vào thư mục mới, không mang file build/local.properties sang. Chạy assembleDebug testDebugUnitTest --no-daemon thành công sau 25 giây, 39/39 tác vụ thực thi và 75 JVM đạt. Kiểm tra này dùng bộ dependency/SDK đã cài trên máy; chưa mô phỏng máy hoàn toàn không có cache hoặc tải mới mọi dependency từ Internet.
+
+Cây app đã kiểm chứng (git rev-parse HEAD:app): 013c546cbeee2b511b2f0e4570d7412f5e090cb1. Các commit bàn giao sau kiểm thử chỉ thay tài liệu; cây app giữ nguyên.
+
+## Git và đóng góp
+
+Bốn merge giữ nguyên lịch sử: 242ff23 (Auth), 4604a6c (Employee), 854dee0 (Attendance), 81a07dc (Salary). Các commit triển khai: 1b76a37 (phiên/xác thực), 7cc4ae4 (tiền lương/dữ liệu), 3363f17 (báo cáo/điều hướng), 7a7e9db (kiểm thử), d27bb16 (tài liệu/ảnh). Cập nhật trạng thái bàn giao được ghi bằng commit tài liệu tiếp theo.
+
+Nhánh tich-hop/hoan-thien-du-an đã push. PR #5 mở, không phải bản nháp và hướng vào main. Đã yêu cầu minhqng review. Dù main hiện không bật bảo vệ nhánh, vẫn giữ yêu cầu ít nhất một người khác review theo đặc tả mục 13.2; không tự merge hoặc tự giả lập phê duyệt. Bốn nhánh gốc là tổ tiên của HEAD, không force push hoặc xóa nhánh thành viên. Chưa có mã riêng từ TV5 nên không xác nhận đủ năm tác giả.

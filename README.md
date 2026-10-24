@@ -136,7 +136,7 @@ Mã từ bốn PR được tích hợp vào nhánh `tich-hop/hoan-thien-du-an` b
 | Trong 66 bài Android: dịch vụ tích hợp thật | 8 | 8 | 0 | 0 |
 | Trong 66 bài Android: luồng giao diện tích hợp thật | 1 | 1 | 0 | 0 |
 
-Tổng cộng **141 bài khác nhau**, không cộng lại các nhóm con hoặc các lần chạy lặp. Lint có **0 lỗi, 54 cảnh báo**; không tắt kiểm tra để có kết quả đạt. APK debug đã tạo thành công.
+Tổng cộng **141 bài khác nhau**, không cộng lại các nhóm con hoặc các lần chạy lặp. Lint có **0 lỗi, 54 cảnh báo**; không tắt kiểm tra để có kết quả đạt. APK debug đã tạo thành công. Một bản clone cục bộ mới, không chứa file build/local.properties, cũng đã build và chạy 75 JVM thành công; chưa thử tải dependency trên máy hoàn toàn không có cache.
 
 Luồng giao diện dùng PBKDF2 và phiên thật: tạo nhân viên qua biểu mẫu, chấm công theo đồng hồ production và chờ 61 giây, tổng kết 180 giờ/4 giờ tăng ca, tính và tính lại 9.100.000 đồng, xác nhận thanh toán, xem lương cá nhân, mở lại Activity, đăng xuất và kiểm tra Back/màn hình bị bảo vệ. Các ca dịch vụ dùng Clock cố định và Room thật; bộ kiểm thử độc lập TV2 vẫn giữ adapter giả chỉ trong APK kiểm thử.
 
@@ -144,7 +144,7 @@ Luồng giao diện dùng PBKDF2 và phiên thật: tạo nhân viên qua biểu
 
 ## 13. Giới hạn của phiên bản
 
-Phiên bản hiện tại hoạt động ngoại tuyến trên một thiết bị, không có backend, đồng bộ hoặc tài khoản từ xa. Chính sách không tính nghỉ trưa, không cho giao diện chỉnh công quá hạn và không cho ca chấm công đi qua ngày. Chưa có kiểm chứng trên thiết bị vật lý. Việc hợp nhất vào main cần tuân thủ review của thành viên khác theo đặc tả.
+Phiên bản hiện tại hoạt động ngoại tuyến trên một thiết bị, không có backend, đồng bộ hoặc tài khoản từ xa. Chính sách không tính nghỉ trưa, không cho giao diện chỉnh công quá hạn và không cho ca chấm công đi qua ngày. Chưa có kiểm chứng trên thiết bị vật lý. [PR tích hợp #5](https://github.com/minhqng/lab-mobile-n01/pull/5) đã mở và mời minhqng review; việc hợp nhất vào main chờ review của thành viên khác theo đặc tả.
 
 ## 14. Tài liệu đặc tả
 

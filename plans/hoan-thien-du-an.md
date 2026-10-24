@@ -11,7 +11,7 @@ Hoàn thiện 25 task tại mục 11 đặc tả: đăng nhập, nhân viên, ch
 - [x] Kết nối Employee/Attendance/Salary với SessionManager duy nhất.
 - [x] Hoàn thiện ReportService, DTO, dashboard và điều hướng.
 - [x] Kiểm thử JVM, Room, giao diện, E2E; đối chiếu KT01–KT30.
-- [ ] Rà soát, cập nhật README, build sạch, push và tạo PR.
+- [x] Rà soát, cập nhật README, build sạch, push và hoàn thiện PR #5.
 
 ## Triển khai và phụ thuộc
 
@@ -26,3 +26,7 @@ Chạy assembleDebug sau mỗi merge; cuối cùng clean assembleDebug testDebug
 ## Rủi ro và phục hồi
 
 Không reset/force push/xóa nhánh thành viên. Merge có commit riêng để truy vết và có thể revert khi cần. Không thay schema hoặc xóa dữ liệu ứng dụng người dùng. Dữ liệu nghiệm thu nằm trong database kiểm thử; không mở đường sửa giờ production. Không tự giả lập đóng góp TV5 hoặc phê duyệt GitHub.
+
+## Kết quả bàn giao
+
+75/75 JVM, 66/66 Android, 0 bỏ qua; lint 0 lỗi/54 cảnh báo. APK debug cài được; kiểm tra buộc dừng tiến trình đã đạt. Bản clone cục bộ mới build và chạy 75 JVM thành công. PR #5 sẵn sàng review tại https://github.com/minhqng/lab-mobile-n01/pull/5, đã mời minhqng. Chưa merge main vì cần review của thành viên khác theo đặc tả mục 13.2; không giả lập phê duyệt. Thiết bị vật lý và đóng góp Git riêng của TV5 chưa có bằng chứng.

@@ -20,6 +20,6 @@ Build sạch cuối thành công: 75 JVM, 66 Android trên Pixel_4 API 30, khôn
 
 ## Việc còn lại
 
-Push nhánh tích hợp, tạo PR và mời thành viên khác review. Không tự giả lập phê duyệt hoặc đóng góp TV5. Thiết bị vật lý chưa kiểm chứng; giới hạn ngoại tuyến, một ca/ngày, không sửa công và không lưu lịch sử đơn giá được giữ theo đặc tả.
+Đã push nhánh tích hợp, hoàn thiện PR #5 và mời minhqng review. Bản clone cục bộ mới build và chạy 75 JVM thành công. Không tự giả lập phê duyệt hoặc đóng góp TV5. Thiết bị vật lý chưa kiểm chứng; giới hạn ngoại tuyến, một ca/ngày, không sửa công và không lưu lịch sử đơn giá được giữ theo đặc tả.
 
 > Đây là lịch sử công việc; README và đặc tả sở hữu hướng dẫn và quyết định hiện hành.
