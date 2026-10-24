@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Mặt đồng hồ màu trắng nằm trong vùng an toàn của biểu tượng thích ứng. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28 C39.64,28 28,39.64 28,54 C28,68.36 39.64,80 54,80 C68.36,80 80,68.36 80,54 C80,39.64 68.36,28 54,28 Z" />
+
+    <!-- Kim đồng hồ màu xanh chủ đạo. -->
+    <path
+        android:fillColor="#0F4C81"
+        android:pathData="M51,37 L57,37 L57,55 L51,55 Z" />
+    <path
+        android:fillColor="#0F4C81"
+        android:pathData="M54,51 L71,51 L71,57 L54,57 Z" />
+</vector>

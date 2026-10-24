@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 27 mới hỗ trợ biểu tượng thanh điều hướng tối trên nền sáng. -->
+    <style name="Theme.EmployeeManager" parent="Base.Theme.EmployeeManager">
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

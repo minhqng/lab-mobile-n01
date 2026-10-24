@@ -1,0 +1,4 @@
+// Cấu hình Gradle dùng chung cho toàn bộ dự án.
+plugins {
+    id 'com.android.application' version '9.4.1' apply false
+}

@@ -1,0 +1,23 @@
+# Tệp cấu hình riêng của máy và Android Studio
+local.properties
+.idea/
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Thư mục kết quả build
+build/
+app/build/
+
+# Tệp ký ứng dụng và khóa bí mật
+*.jks
+*.keystore
+keystore.properties
+
+# Hệ điều hành
+.DS_Store
+Thumbs.db
+
+# Tệp log
+*.log

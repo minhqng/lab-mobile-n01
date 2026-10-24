@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Quản lý lương nhân viên</string>
+
+    <!-- Màn hình khởi động tối thiểu của giai đoạn nền tảng. -->
+    <string name="main_title">Quản lý thời gian làm việc và tiền lương</string>
+    <string name="main_subtitle">Ứng dụng ngoại tuyến dành cho quản trị viên và nhân viên.</string>
+    <string name="main_foundation_ready">Nền tảng ứng dụng đã được khởi tạo</string>
+    <string name="main_next_step">Các mô-đun đăng nhập, nhân viên, chấm công, tính lương và báo cáo sẽ được triển khai ở các giai đoạn tiếp theo.</string>
+    <string name="main_foundation_version">Phiên bản nền tảng: 1.0</string>
+</resources>
