@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/surface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/auth_tv_title"
+            style="@style/TextAppearance.EmployeeManager.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/auth_login_title"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/auth_tv_subtitle"
+            style="@style/TextAppearance.EmployeeManager.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/auth_login_subtitle" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/outline" />
+
+        <!-- Hộp thông báo lỗi -->
+        <TextView
+            android:id="@+id/auth_tv_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@color/error_container"
+            android:padding="12dp"
+            android:textColor="@color/on_error_container"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <!-- Ô nhập Tên đăng nhập -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/auth_til_username"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/auth_username_label"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/auth_et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ô nhập Mật khẩu (che ký tự) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/auth_til_password"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/auth_password_label"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/auth_et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Chỉ báo đang tải / xác thực -->
+        <ProgressBar
+            android:id="@+id/auth_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
+
+        <!-- Nút Đăng nhập -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/auth_btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/auth_btn_login"
+            android:textSize="16sp" />
+
+        <!-- Gợi ý tài khoản dùng thử demo -->
+        <TextView
+            android:id="@+id/auth_tv_demo_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@color/primary_container"
+            android:padding="12dp"
+            android:text="@string/auth_demo_credentials_hint"
+            android:textColor="@color/on_primary_container"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+</ScrollView>

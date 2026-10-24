@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:id="@+id/nv_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_back" />
+        <TextView
+            android:id="@+id/nv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_them_moi"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingVertical="12dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/nv_code"
+            android:text="@string/nv_ma_nhan_vien"
+            android:paddingTop="12dp" />
+        <EditText
+            android:id="@id/nv_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:inputType="textCapCharacters"
+            android:autofillHints=""  />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/nv_fullname"
+            android:text="@string/nv_ho_ten"
+            android:paddingTop="12dp" />
+        <EditText
+            android:id="@id/nv_fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:inputType="textPersonName"
+            android:autofillHints="personName"  />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/nv_email"
+            android:text="@string/nv_email"
+            android:paddingTop="12dp" />
+        <EditText
+            android:id="@id/nv_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:inputType="textEmailAddress"
+            android:autofillHints="emailAddress"  />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/nv_phone"
+            android:text="@string/nv_so_dien_thoai"
+            android:paddingTop="12dp" />
+        <EditText
+            android:id="@id/nv_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:inputType="phone"
+            android:autofillHints="phone"  />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/nv_hourly_rate"
+            android:text="@string/nv_don_gia_gio"
+            android:paddingTop="12dp" />
+        <EditText
+            android:id="@id/nv_hourly_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:inputType="number"
+            android:autofillHints=""  />
+        <LinearLayout
+            android:id="@+id/nv_account_fields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/nv_username"
+                android:text="@string/nv_tai_khoan"
+                android:paddingTop="12dp" />
+            <EditText
+                android:id="@id/nv_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:inputType="text"
+                android:autofillHints="newUsername"  />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/nv_password"
+                android:text="@string/nv_mat_khau"
+                android:paddingTop="12dp" />
+            <EditText
+                android:id="@id/nv_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:inputType="textPassword"
+                android:autofillHints="newPassword"
+                android:saveEnabled="false" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/nv_confirmation"
+                android:text="@string/nv_xac_nhan_mat_khau"
+                android:paddingTop="12dp" />
+            <EditText
+                android:id="@id/nv_confirmation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:inputType="textPassword"
+                android:autofillHints="newPassword"
+                android:saveEnabled="false" />
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/nv_loading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/nv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_dang_tai"
+            android:textSize="16sp"
+            android:accessibilityLiveRegion="polite"
+            android:paddingVertical="8dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/nv_thu_lai" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nv_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nv_luu" />
+    </LinearLayout>
+</ScrollView>

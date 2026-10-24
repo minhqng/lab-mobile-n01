@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:background="@color/primary_container"
             android:padding="16dp"
-            android:text="@string/main_foundation_ready"
+            android:text="@string/main_checking_session"
             android:textColor="@color/on_primary_container"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/main_next_step" />
+            android:text="@string/main_subtitle" />
 
         <TextView
             style="@style/TextAppearance.EmployeeManager.Body"

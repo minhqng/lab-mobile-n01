@@ -10,6 +10,8 @@ import androidx.room.Update;
 import com.example.employeemanager.data.entities.Employee;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Truy vấn nhân viên.
@@ -45,14 +47,23 @@ public interface EmployeeDao {
     List<Employee> getAll();
 
     /**
-     * Tìm gần đúng theo mã, họ tên hoặc email; không phân biệt hoa thường với ký tự ASCII.
+     * Tìm chuỗi con theo Unicode; dấu phần trăm và gạch dưới là ký tự thông thường.
+     * Danh sách nhỏ của ứng dụng ngoại tuyến được lọc trên luồng nền, giữ thứ tự DAO.
      */
-    @Query("SELECT * FROM Employee "
-            + "WHERE code LIKE '%' || :keyword || '%' "
-            + "OR fullname LIKE '%' || :keyword || '%' "
-            + "OR email LIKE '%' || :keyword || '%' "
-            + "ORDER BY fullname COLLATE NOCASE ASC, code ASC")
-    List<Employee> search(String keyword);
+    default List<Employee> search(String keyword) {
+        String query = keyword == null ? "" : keyword.trim().toLowerCase(Locale.ROOT);
+        List<Employee> employees = getAll();
+        if (query.isEmpty()) return employees;
+        List<Employee> result = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee.code.toLowerCase(Locale.ROOT).contains(query)
+                    || employee.fullname.toLowerCase(Locale.ROOT).contains(query)
+                    || employee.email.toLowerCase(Locale.ROOT).contains(query)) {
+                result.add(employee);
+            }
+        }
+        return result;
+    }
 
     @Query("SELECT COUNT(*) FROM Employee")
     long count();

@@ -13,6 +13,10 @@ import androidx.room.Query;
 @Dao
 public interface ReportDao {
 
+    @Query("SELECT * FROM WorkLog WHERE status = 'COMPLETED' "
+            + "AND substr(workDate, 1, 7) = :monthKey ORDER BY workDate, employeeId")
+    java.util.List<com.example.employeemanager.data.entities.WorkLog> completedLogsByMonth(String monthKey);
+
     @Query("SELECT COUNT(*) FROM Employee")
     long countEmployees();
 

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".salary.SalaryDetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/luong_title_detail"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <ProgressBar
+            android:id="@+id/pbDetailLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Card chi tiết bảng lương -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSalaryContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="3dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#DDDDDD"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Mã nhân viên -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_code"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailEmployeeCode"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Họ và tên -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_name"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailEmployeeName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEE"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Kỳ lương -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_period"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailPeriod"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Tổng giờ làm -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_total_hours"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailTotalHours"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Giờ tăng ca -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_overtime_hours"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailOvertimeHours"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Tổng lương -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_total_salary"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvDetailTotalSalary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#2E7D32" />
+                </LinearLayout>
+
+                <!-- Trạng thái -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="6dp">
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_label_status"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvDetailStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/luong_status_draft"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:background="@drawable/bg_status_draft"
+                        android:textColor="#E65100" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Nút xác nhận đã thanh toán -->
+        <TextView android:id="@+id/tvDetailRegularHours" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="16sp" />
+        <TextView android:id="@+id/tvDetailCurrentRate" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="16sp" />
+        <Button android:id="@+id/btnRecalculate" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/bc_recalculate" />
+        <Button
+            android:id="@+id/btnConfirmPaid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/luong_btn_confirm_paid"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp" />
+
+    </LinearLayout>
+
+</ScrollView>

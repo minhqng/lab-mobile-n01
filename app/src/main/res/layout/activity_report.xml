@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="24dp">
+        <TextView android:id="@+id/bc_title" style="@style/TextAppearance.EmployeeManager.Title"
+            android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <LinearLayout android:id="@+id/bc_period" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="16dp">
+            <Spinner android:id="@+id/bc_month" android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="48dp" android:contentDescription="@string/luong_label_month" />
+            <Spinner android:id="@+id/bc_year" android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="48dp" android:contentDescription="@string/luong_label_year" />
+        </LinearLayout>
+        <Button android:id="@+id/bc_load" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/bc_load" />
+        <ProgressBar android:id="@+id/bc_progress" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:visibility="gone" />
+        <TextView android:id="@+id/bc_status" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
+        <TextView android:id="@+id/bc_content" style="@style/TextAppearance.EmployeeManager.Body"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:padding="16dp" android:layout_marginTop="12dp" android:background="@color/primary_container" />
+        <Button android:id="@+id/bc_employees" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/nv_danh_sach" android:visibility="gone" />
+        <Button android:id="@+id/bc_payroll" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/luong_title_list" android:visibility="gone" />
+        <Button android:id="@+id/bc_attendance" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/cong_title" android:visibility="gone" />
+        <Button android:id="@+id/bc_history" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/cong_history_title" android:visibility="gone" />
+        <Button android:id="@+id/bc_summary" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/bc_monthly_title" android:visibility="gone" />
+        <Button android:id="@+id/bc_salary" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/bc_my_salary" android:visibility="gone" />
+        <Button android:id="@+id/bc_logout" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/auth_logout_button" android:visibility="gone" />
+        <Button android:id="@+id/bc_back" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/nv_back" />
+    </LinearLayout>
+</ScrollView>
