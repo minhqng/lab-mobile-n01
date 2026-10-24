@@ -130,4 +130,50 @@
     <string name="cong_loading">Đang tải...</string>
     <string name="cong_loaded_count">Đã tải %1$d bản ghi</string>
 
+    <!-- Module Quản lý lương (TV4) -->
+    <string name="luong_title_list">Quản lý bảng lương</string>
+    <string name="luong_title_detail">Chi tiết bảng lương</string>
+    <string name="luong_label_month">Tháng</string>
+    <string name="luong_label_year">Năm</string>
+    <string name="luong_label_select_employee">Chọn nhân viên:</string>
+    <string name="luong_btn_calculate">Tính lương</string>
+    <string name="luong_btn_refresh">Làm mới</string>
+    <string name="luong_btn_confirm_paid">Xác nhận đã thanh toán</string>
+    <string name="luong_status_draft">Bản nháp (DRAFT)</string>
+    <string name="luong_status_paid">Đã thanh toán (PAID)</string>
+    <string name="luong_empty_list">Chưa có bảng lương nào trong tháng này.</string>
+    <string name="luong_empty_employee">Không có nhân viên nào trong hệ thống.</string>
+    <string name="luong_loading">Đang tải dữ liệu…</string>
+    <string name="luong_calculating">Đang tính toán lương…</string>
+    <string name="luong_confirm_paid_title">Xác nhận thanh toán</string>
+    <string name="luong_confirm_paid_message">Bạn có chắc chắn muốn chốt thanh toán bảng lương này không? Thao tác này không thể hoàn tác.</string>
+    <string name="luong_confirm_yes">Đồng ý</string>
+    <string name="luong_confirm_no">Hủy</string>
+    <string name="luong_label_code">Mã nhân viên:</string>
+    <string name="luong_label_name">Họ và tên:</string>
+    <string name="luong_label_period">Kỳ lương:</string>
+    <string name="luong_label_total_hours">Tổng giờ làm việc:</string>
+    <string name="luong_label_overtime_hours">Số giờ tăng ca:</string>
+    <string name="luong_label_total_salary">Tổng tiền lương:</string>
+    <string name="luong_label_status">Trạng thái:</string>
+    <string name="luong_unit_hours">giờ</string>
+    <string name="luong_unit_currency">đ</string>
+    <string name="luong_error_prefix">Lỗi: </string>
+    <string name="luong_error_invalid_id">Mã bảng lương không hợp lệ.</string>
+    <string name="luong_error_not_found">Không tìm thấy thông tin bảng lương.</string>
+    <string name="luong_msg_calculate_success">Tính bảng lương thành công.</string>
+    <string name="luong_msg_paid_success">Đã xác nhận thanh toán bảng lương thành công.</string>
+    <string name="luong_error_permission_denied">Bạn không có quyền quản trị để thực hiện thao tác này.</string>
+    <string name="luong_error_generic">Đã xảy ra lỗi, vui lòng thử lại sau.</string>
+
+    <!-- Các chuỗi định dạng động cho Module Quản lý lương -->
+    <string name="luong_format_month">Tháng %d</string>
+    <string name="luong_format_work_hours">Tổng: %1$.2f giờ (Tăng ca: %2$.2f giờ)</string>
+    <string name="luong_format_hours">%1$.2f %2$s</string>
+    <string name="luong_fallback_employee">Nhân viên #%d</string>
+    <string name="luong_fallback_employee_short">NV #%d</string>
+    <string name="luong_format_employee_display">%1$s - %2$s</string>
+    <string name="luong_format_period">Tháng %1$02d/%2$d</string>
+    <string name="luong_format_currency">%1$s %2$s</string>
+    <string name="luong_format_error_detail">%1$s: %2$s</string>
 </resources>
