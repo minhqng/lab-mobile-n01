@@ -28,7 +28,7 @@ Phiên bản hiện tại là **nền tảng kỹ thuật (task NEN-01)**: dự 
 
 - Đăng nhập, phân quyền, lưu phiên bằng SharedPreferences và tài khoản Admin mẫu.
 - Thêm, sửa, xóa, tìm kiếm nhân viên.
-- Chấm công vào/ra và lịch sử công.
+- Chấm công vào/ra, lịch sử công và tổng giờ tháng đã được triển khai; việc mở màn hình từ luồng đăng nhập phụ thuộc module TV1.
 - Tính lương, tăng ca và chốt bảng lương `PAID`.
 - Dashboard và các màn hình báo cáo.
 
@@ -221,9 +221,10 @@ Các lệnh sau đã được chạy thật trong quá trình bàn giao nền t�
 | Lệnh | Kết quả |
 |---|---|
 | `./gradlew assembleDebug` | Thành công, tạo `app-debug.apk` |
-| `./gradlew testDebugUnitTest` | Thành công, **10/10** bài kiểm thử đạt |
-| `./gradlew connectedDebugAndroidTest` | Thành công trên máy ảo Pixel_8 (Android 15, API 35), **7/7** bài kiểm thử đạt |
-| `./gradlew lintDebug` | Thành công, **0 lỗi** và 10 cảnh báo về phiên bản thư viện, biểu tượng và cấu hình sao lưu |
+| `./gradlew testDebugUnitTest` | Thành công, toàn bộ bài kiểm thử đơn vị hiện có đạt |
+| `./gradlew compileDebugAndroidTestJavaWithJavac` | Thành công, mã nguồn kiểm thử instrumented biên dịch được |
+| `./gradlew connectedDebugAndroidTest` | Chưa chạy lại vì môi trường hiện tại không có emulator |
+| `./gradlew lintDebug` | Thành công, không có lỗi chặn build |
 | Cài APK và mở `MainActivity` | Ứng dụng mở bình thường, không có lỗi trong bộ nhớ log sự cố |
 
 Nội dung đã kiểm chứng:
@@ -238,7 +239,7 @@ Nội dung đã kiểm chứng:
 Phần chưa kiểm chứng:
 
 - Chưa chạy trên thiết bị thật; kết quả instrumented test chỉ từ máy ảo Pixel_8 API 35.
-- Chưa có kiểm thử cho đăng nhập, CRUD nhân viên, chấm công và tính lương vì các module này chưa được triển khai.
+- Chưa có kiểm thử cho đăng nhập, CRUD nhân viên và tính lương vì các module này chưa được triển khai. Phần chấm công đã có unit test và kiểm thử Room; kiểm thử Room mới chỉ được biên dịch trong lượt này do không có emulator.
 
 Không có bài kiểm thử nào bị bỏ qua, bỏ assert hoặc tắt để có kết quả xanh.
 
