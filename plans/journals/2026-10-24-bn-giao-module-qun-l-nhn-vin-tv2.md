@@ -22,4 +22,4 @@ Pipe PowerShell sang Node từng làm mất dấu resource; đã ghi UTF-8 trự
 
 TV1 nối EmployeeAuth bằng session và PasswordHasher thật rồi chạy E2E đăng nhập. Production hiện từ chối mặc định, không có Auth/hash/Admin giả. Máy ảo Pixel_4 cổng 5554 được khởi động riêng và được dừng khi bàn giao. Không xuất bản AgentWiki; nhật ký giữ cục bộ trong repository.
 
-> Historical work record — not durable authority. Prefer docs/specs/ADRs for current decisions.
+> Đây là bản ghi lịch sử công việc. Các quyết định hiện hành được xác định theo tài liệu dự án, đặc tả và bản ghi quyết định kiến trúc.
